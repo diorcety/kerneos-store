@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+
+  <persistence-unit name="store" transaction-type="JTA">
+    <provider></provider>
+    <jta-data-source>jdbc_1</jta-data-source>
+    <properties>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
+      <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+      <property name="eclipselink.target-database" value="HSQL"/>
+      <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+      <property name="eclipselink.ddl-generation.output-mode" value="database"/>
+      <property name="toplink.target-database" value="HSQL"/>
+      <property name="toplink.ddl-generation" value="drop-and-create-tables"/>
+      <property name="toplink.ddl-generation.output-mode" value="database"/>
+      <property name="openjpa.jdbc.DBDictionary" value="hsql"/>
+      <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
+    </properties>
+  </persistence-unit>
+
+</persistence>
