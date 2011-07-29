@@ -30,7 +30,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import java.util.Collection;
 
 @IdClass(ModuleVersionPK.class)
 @Entity
@@ -42,6 +44,15 @@ public class ModuleVersion extends ModuleMeta {
     @Basic(optional = false)
     @Id
     private String version;
+
+    @Basic(optional = false)
+    private Boolean available;
+
+    @Basic(optional = false)
+    private String repoKey;
+
+    @ManyToMany
+    private Collection<Repository> repositories;
 
     public String getVersion() {
         return version;
@@ -57,5 +68,29 @@ public class ModuleVersion extends ModuleMeta {
 
     public void setModule(Module module) {
         this.module = module;
+    }
+
+    public Boolean getAvailable() {
+        return available;
+    }
+
+    public void setAvailable(Boolean available) {
+        this.available = available;
+    }
+
+    public String getRepoKey() {
+        return repoKey;
+    }
+
+    public void setRepoKey(String repoKey) {
+        this.repoKey = repoKey;
+    }
+
+    public Collection<Repository> getRepositories() {
+        return repositories;
+    }
+
+    public void setRepositories(Collection<Repository> repositories) {
+        this.repositories = repositories;
     }
 }

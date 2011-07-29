@@ -37,13 +37,12 @@ import org.osgi.service.http.HttpService;
 
 import org.osgi.service.http.NamespaceException;
 
+import org.ow2.kerneosstore.core.Store;
 import org.ow2.kerneosstore.web.JerseyApplication;
 import org.ow2.util.log.Log;
 import org.ow2.util.log.LogFactory;
 
 import javax.servlet.ServletException;
-import java.util.Dictionary;
-import java.util.Hashtable;
 
 @Component
 @Instantiate
@@ -55,6 +54,9 @@ public class Activator {
 
     @Requires
     private HttpService httpService;
+
+    @Requires
+    private Store store;
 
     @Property(name = "context", value = "/store")
     private String context;
@@ -72,8 +74,7 @@ public class Activator {
     private synchronized void start() throws ServletException, NamespaceException {
         logger.debug("Start Store WEB-RS");
 
-        StoreInfo storeInfo = new StoreInfo(name, description, url);
-        httpService.registerServlet(context, new ServletContainer(new JerseyApplication(storeInfo)), null, null);
+        httpService.registerServlet(context, new ServletContainer(new JerseyApplication(store)), null, null);
     }
 
     @Invalidate

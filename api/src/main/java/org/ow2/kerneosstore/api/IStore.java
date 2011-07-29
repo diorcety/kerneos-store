@@ -27,8 +27,10 @@ package org.ow2.kerneosstore.api;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 @Path("/")
@@ -36,21 +38,31 @@ public interface IStore {
     @GET
     @Path("/info")
     @Produces(MediaType.APPLICATION_XML)
-    public IStoreInfo getInfo();
+    public StoreInfo getInfo();
+
+    @POST
+    @Path("/info")
+    @Consumes(MediaType.APPLICATION_XML)
+    public void setInfo(StoreInfo storeInfo);
 
     @GET
     @Path("/modules")
     @Produces(MediaType.APPLICATION_XML)
-    public IModule[] getModules(String fieldName, String filter, String order, int itemByPage, int page);
+    public Modules getModules(
+            @QueryParam("filter") String filter,
+            @QueryParam("order") String order,
+            @QueryParam("fieldName") String fieldName,
+            @QueryParam("itemByPage") Integer itemByPage,
+            @QueryParam("page") Integer page);
 
     @GET
     @Path("/updatedModules")
     @Produces(MediaType.APPLICATION_XML)
     @Consumes(MediaType.APPLICATION_XML)
-    public IModule[] getUpdatedModules(IModule[] modules);
+    public Modules getUpdatedModules(Modules modules);
 
     @GET
     @Path("/download")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Byte[] downloadModule(IModule module);
+    public Byte[] downloadModule(Module module);
 }

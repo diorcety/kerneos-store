@@ -26,19 +26,51 @@
 package org.ow2.kerneosstore.core.impl;
 
 
+import org.ow2.kerneosstore.core.Module;
+import org.ow2.kerneosstore.core.ModuleVersion;
 import org.ow2.kerneosstore.core.Store;
+import org.ow2.kerneosstore.core.StoreInfo;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import java.util.Collection;
 
 @Stateless
 public class StoreLocal implements Store {
+
     /**
      * Entity manager used by this session bean.
      */
     @PersistenceContext
     private EntityManager entityManager = null;
+
+    public StoreInfo getStoreInfo() {
+        return (StoreInfo) entityManager.createNamedQuery("store.info").getSingleResult();
+    }
+
+    @Override
+    public void setStoreInfo(StoreInfo storeInfo) {
+        storeInfo = entityManager.merge(storeInfo);
+    }
+
+    public Collection<ModuleVersion> getModulesByName(String filter, String order, Integer itemByPage, Integer page) {
+        String strQuery = "SELECT x FROM ModuleVersion x";
+        if (filter != null) {
+            strQuery += " WHERE x.module.name LIKE %:filter%";
+        }
+        if (order != null) {
+            strQuery += " ORDER BY x.module.name";
+        }
+        Query q = entityManager.createQuery(strQuery);
+        if (itemByPage != null) {
+            q.setMaxResults(itemByPage);
+            if (page != null) {
+                q.setFirstResult(itemByPage * page);
+            }
+        }
+
+        return q.getResultList();
+    }
 }

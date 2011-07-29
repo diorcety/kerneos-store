@@ -28,14 +28,54 @@ package org.ow2.kerneosstore.api;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public interface IModule {
-    public Long getId();
+public class Module {
+    private Long id;
+    private String name;
+    private String version;
+    private String description;
+    private Byte[] image;
 
-    public String getName();
+    public Module() {
 
-    public String getVersion();
+    }
 
-    public String getDescription();
+    public Long getId() {
+        return id;
+    }
 
-    public Byte[] getImage();
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(Byte[] image) {
+        this.image = image;
+    }
 }

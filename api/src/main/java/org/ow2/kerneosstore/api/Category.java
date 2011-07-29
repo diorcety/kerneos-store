@@ -23,28 +23,42 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.core;
+package org.ow2.kerneosstore.api;
 
-import javax.persistence.Basic;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.util.Map;
+import javax.xml.bind.annotation.XmlRootElement;
 
-@Entity
-public class Repository {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@XmlRootElement
+public class Category {
     private Long id;
-
-    @Basic(optional = false)
     private String name;
+    private String descrioption;
 
-    @Basic(optional = false)
-    private String type;
+    public Category()
+    {
 
-    @ElementCollection
-    private Map<String, String> properties;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescrioption() {
+        return descrioption;
+    }
+
+    public void setDescrioption(String descrioption) {
+        this.descrioption = descrioption;
+    }
 }

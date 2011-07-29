@@ -40,14 +40,35 @@ public class Module {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Basic(optional = false)
-    private String name;
-
     @OneToMany(mappedBy = "module")
     private Collection<ModuleVersion> versions;
 
     @ManyToMany(mappedBy = "modules")
     private Collection<Category> categories;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Collection<ModuleVersion> getVersions() {
+        return versions;
+    }
+
+    public void setVersions(Collection<ModuleVersion> versions) {
+        this.versions = versions;
+    }
+
+    public Collection<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(Collection<Category> categories) {
+        this.categories = categories;
+    }
 
     @Override
     public boolean equals(Object o) {

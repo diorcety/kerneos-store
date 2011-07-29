@@ -26,7 +26,14 @@
 package org.ow2.kerneosstore.core;
 
 import javax.ejb.Local;
+import java.util.Collection;
 
 @Local
 public interface Store {
+    public StoreInfo getStoreInfo();
+
+    public void setStoreInfo(StoreInfo storeInfo);
+
+    public Collection<ModuleVersion> getModulesByName(String filter, String order, Integer itemByPage, Integer page);
+
 }

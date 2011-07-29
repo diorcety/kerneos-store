@@ -1,7 +1,7 @@
 package org.ow2.kerneosstore.web;
 
+import org.ow2.kerneosstore.core.Store;
 import org.ow2.kerneosstore.web.impl.StoreImpl;
-import org.ow2.kerneosstore.web.impl.StoreInfo;
 
 import javax.ws.rs.core.Application;
 
@@ -10,16 +10,16 @@ import java.util.Set;
 
 public class JerseyApplication extends Application {
 
-    private StoreInfo storeInfo;
+    private Store store;
 
-    public JerseyApplication(StoreInfo storeInfo) {
-        this.storeInfo = storeInfo;
+    public JerseyApplication(Store store) {
+        this.store = store;
     }
 
     @Override
     public Set<Object> getSingletons() {
         Set<Object> objects = new HashSet<Object>();
-        objects.add(new StoreImpl(storeInfo));
+        objects.add(new StoreImpl(store));
         return objects;
     }
 }

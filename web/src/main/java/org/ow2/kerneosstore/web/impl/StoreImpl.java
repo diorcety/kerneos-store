@@ -25,35 +25,102 @@
 
 package org.ow2.kerneosstore.web.impl;
 
-import org.ow2.kerneosstore.api.IModule;
+import org.ow2.kerneosstore.api.Module;
+import org.ow2.kerneosstore.api.Modules;
 import org.ow2.kerneosstore.api.IStore;
+import org.ow2.kerneosstore.api.StoreInfo;
+import org.ow2.kerneosstore.core.ModuleVersion;
+import org.ow2.kerneosstore.core.Store;
+import org.ow2.util.log.Log;
+import org.ow2.util.log.LogFactory;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 public class StoreImpl implements IStore {
-    private StoreInfo storeInfo;
+    /**
+     * The logger.
+     */
+    private static Log logger = LogFactory.getLog(Activator.class);
 
-    public StoreImpl(StoreInfo storeInfo) {
-        this.storeInfo = storeInfo;
+    private Store store;
+
+    public StoreImpl(Store store) {
+        this.store = store;
     }
 
     @Override
     public StoreInfo getInfo() {
-        return storeInfo;
-    }
+        try {
+            org.ow2.kerneosstore.core.StoreInfo strI = store.getStoreInfo();
+            StoreInfo storeInfo = new StoreInfo();
 
-    @Override
-    public IModule[] getModules(String fieldName, String filter, String order, int itemByPage, int page) {
+            // Copy information
+            storeInfo.setName(strI.getName());
+            storeInfo.setDescription(strI.getDescription());
+            storeInfo.setUrl(strI.getUrl());
+
+            return storeInfo;
+        } catch (Exception e) {
+            logger.error("Store not initialized");
+        }
         return null;
     }
 
     @Override
-    public IModule[] getUpdatedModules(IModule[] modules) {
+    public void setInfo(StoreInfo storeInfo) {
+        org.ow2.kerneosstore.core.StoreInfo strI = new org.ow2.kerneosstore.core.StoreInfo();
+
+        // Copy information
+        strI.setName(storeInfo.getName());
+        strI.setDescription(storeInfo.getDescription());
+        strI.setUrl(storeInfo.getUrl());
+
+        store.setStoreInfo(strI);
+    }
+
+    @Override
+    public Modules getModules(String filter, String order, String fieldName, Integer itemByPage, Integer page) {
+        try {
+            Collection<ModuleVersion> modules = null;
+            if (fieldName == null) {
+                modules = store.getModulesByName(filter, order, itemByPage, page);
+            } else if (fieldName.equals("name")) {
+                modules = store.getModulesByName(filter, order, itemByPage, page);
+            }
+
+            // Transform to array
+            if (modules != null) {
+                Module[] moduleArray = new Module[modules.size()];
+                int i = 0;
+                for (Iterator<ModuleVersion> iterator = modules.iterator(); iterator.hasNext(); ) {
+                    ModuleVersion moduleVersion = iterator.next();
+                    i++;
+
+                    // Copy information
+                    moduleArray[i] = new Module();
+                    moduleArray[i].setId(moduleVersion.getModule().getId());
+                    moduleArray[i].setName(moduleVersion.getName());
+                    moduleArray[i].setVersion(moduleVersion.getVersion());
+                    moduleArray[i].setDescription(moduleVersion.getDescription());
+                    moduleArray[i].setImage(moduleVersion.getImage());
+                }
+                return new Modules(moduleArray);
+            }
+        } catch (Exception e) {
+            logger.error("Can't get the modules");
+        }
+
         return null;
     }
 
     @Override
-    public Byte[] downloadModule(IModule module) {
+    public Modules getUpdatedModules(Modules modules) {
+        return null;
+    }
+
+    @Override
+    public Byte[] downloadModule(Module module) {
         return new Byte[0];
     }
 }

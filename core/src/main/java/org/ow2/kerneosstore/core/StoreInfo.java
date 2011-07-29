@@ -26,25 +26,49 @@
 package org.ow2.kerneosstore.core;
 
 import javax.persistence.Basic;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.Map;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 @Entity
-public class Repository {
+@NamedQueries({
+        @NamedQuery(name = "store.info", query = "SELECT x FROM StoreInfo as x")
+})
+public class StoreInfo {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id = new Long(0);
 
     @Basic(optional = false)
     private String name;
 
-    @Basic(optional = false)
-    private String type;
+    @Basic(optional = true)
+    private String description;
 
-    @ElementCollection
-    private Map<String, String> properties;
+    @Basic(optional = true)
+    private String url;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

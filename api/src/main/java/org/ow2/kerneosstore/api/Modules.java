@@ -28,10 +28,22 @@ package org.ow2.kerneosstore.api;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public interface ICategory {
-    public Long getId();
+public class Modules {
+    private Module[] modules;
 
-    public String getName();
+    public Modules() {
 
-    public String getDescription();
+    }
+
+    public Modules(Module[] modules) {
+        this.modules = modules;
+    }
+
+    public Module[] getModules() {
+        return modules;
+    }
+
+    public void setModules(Module[] modules) {
+        this.modules = modules;
+    }
 }

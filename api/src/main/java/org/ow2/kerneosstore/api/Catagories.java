@@ -23,52 +23,27 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.web.impl;
-
-import org.ow2.kerneosstore.api.IStoreInfo;
+package org.ow2.kerneosstore.api;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class StoreInfo implements IStoreInfo {
-    private String name;
-    private String description;
-    private String url;
+public class Catagories {
+    private Category[] categories;
 
-    public StoreInfo() {
+    public Catagories() {
 
     }
 
-    public StoreInfo(String name, String description, String url) {
-        this.name = name;
-        this.description = description;
-        this.url = url;
+    public Catagories(Category[] categories) {
+        this.categories = categories;
     }
 
-    @Override
-    public String getName() {
-        return name;
+    public Category[] getCatagories() {
+        return categories;
     }
 
-    @Override
-    public String getDescription() {
-        return description;
-    }
-
-    @Override
-    public String getUrl() {
-        return url;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
+    public void setCategories(Category[] categories) {
+        this.categories = categories;
     }
 }
