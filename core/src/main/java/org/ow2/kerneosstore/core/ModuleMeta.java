@@ -28,6 +28,10 @@ package org.ow2.kerneosstore.core;
 import javax.persistence.Basic;
 import javax.persistence.Lob;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import java.util.Date;
 
 @MappedSuperclass
 public class ModuleMeta {
@@ -42,6 +46,9 @@ public class ModuleMeta {
 
     @Basic(optional = true)
     private String url;
+
+    @Temporal(TemporalType.DATE)
+    private Date date;
 
     @Lob
     private Byte[] image;
@@ -77,6 +84,14 @@ public class ModuleMeta {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public Byte[] getImage() {

@@ -26,12 +26,14 @@
 package org.ow2.kerneosstore.api;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Date;
 
 @XmlRootElement
 public class Module {
     private Long id;
     private String name;
     private String version;
+    private Date date;
     private String description;
     private Byte[] image;
 
@@ -61,6 +63,14 @@ public class Module {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public String getDescription() {

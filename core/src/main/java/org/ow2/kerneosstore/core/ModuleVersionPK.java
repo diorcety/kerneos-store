@@ -31,7 +31,11 @@ public class ModuleVersionPK implements Serializable {
 
     private Module module;
 
-    private String version;
+    private Integer major;
+
+    private Integer minor;
+
+    private Integer revision;
 
     @Override
     public boolean equals(Object o) {
@@ -40,8 +44,10 @@ public class ModuleVersionPK implements Serializable {
 
         ModuleVersionPK that = (ModuleVersionPK) o;
 
+        if (major != null ? !major.equals(that.major) : that.major != null) return false;
+        if (minor != null ? !minor.equals(that.minor) : that.minor != null) return false;
         if (module != null ? !module.equals(that.module) : that.module != null) return false;
-        if (version != null ? !version.equals(that.version) : that.version != null) return false;
+        if (revision != null ? !revision.equals(that.revision) : that.revision != null) return false;
 
         return true;
     }
@@ -49,7 +55,9 @@ public class ModuleVersionPK implements Serializable {
     @Override
     public int hashCode() {
         int result = module != null ? module.hashCode() : 0;
-        result = 31 * result + (version != null ? version.hashCode() : 0);
+        result = 31 * result + (major != null ? major.hashCode() : 0);
+        result = 31 * result + (minor != null ? minor.hashCode() : 0);
+        result = 31 * result + (revision != null ? revision.hashCode() : 0);
         return result;
     }
 }

@@ -33,6 +33,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import java.util.Collection;
+import java.util.LinkedList;
 
 @Entity
 public class Module {
@@ -55,19 +56,15 @@ public class Module {
     }
 
     public Collection<ModuleVersion> getVersions() {
+        if (versions == null)
+            versions = new LinkedList<ModuleVersion>();
         return versions;
     }
 
-    public void setVersions(Collection<ModuleVersion> versions) {
-        this.versions = versions;
-    }
-
     public Collection<Category> getCategories() {
+        if (categories == null)
+            categories = new LinkedList<Category>();
         return categories;
-    }
-
-    public void setCategories(Collection<Category> categories) {
-        this.categories = categories;
     }
 
     @Override

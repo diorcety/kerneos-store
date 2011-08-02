@@ -23,23 +23,22 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.core;
+package org.ow2.kerneosstore.web.impl;
 
-import javax.ejb.Local;
-import java.util.Collection;
+import javax.ejb.EJBException;
+import javax.persistence.NoResultException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
-@Local
-public interface Store {
-    public StoreInfo getStoreInfo();
-
-    public void setStoreInfo(StoreInfo storeInfo);
-
-    public Module getModule(Long id);
-
-    public ModuleVersion getModule(Long id, Integer major, Integer minor, Integer revision);
-
-    public ModuleVersion setModule(ModuleVersion moduleVersion);
-
-    public Collection<ModuleVersion> getModulesByName(String filter, String order, Integer itemByPage, Integer page);
-
+@Provider
+public class EJBExceptionMapper implements ExceptionMapper<EJBException> {
+    @Override
+    public Response toResponse(EJBException exception) {
+        if (exception.getCausedByException() instanceof NoResultException) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } else {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
 }

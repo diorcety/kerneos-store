@@ -27,39 +27,64 @@ package org.ow2.kerneosstore.core;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import java.util.Collection;
+import java.util.LinkedList;
 
 @IdClass(ModuleVersionPK.class)
 @Entity
 public class ModuleVersion extends ModuleMeta {
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @Id
     private Module module;
 
     @Basic(optional = false)
     @Id
-    private String version;
+    private Integer major;
 
     @Basic(optional = false)
-    private Boolean available;
+    @Id
+    private Integer minor;
 
     @Basic(optional = false)
-    private String repoKey;
+    @Id
+    private Integer revision;
+
+    @Basic(optional = false)
+    private Boolean available = false;
+
+    @Basic(optional = true)
+    private String repositoryKey;
 
     @ManyToMany
     private Collection<Repository> repositories;
 
-    public String getVersion() {
-        return version;
+    public Integer getMajor() {
+        return major;
     }
 
-    public void setVersion(String version) {
-        this.version = version;
+    public void setMajor(Integer major) {
+        this.major = major;
+    }
+
+    public Integer getMinor() {
+        return minor;
+    }
+
+    public void setMinor(Integer minor) {
+        this.minor = minor;
+    }
+
+    public Integer getRevision() {
+        return revision;
+    }
+
+    public void setRevision(Integer revision) {
+        this.revision = revision;
     }
 
     public Module getModule() {
@@ -78,19 +103,17 @@ public class ModuleVersion extends ModuleMeta {
         this.available = available;
     }
 
-    public String getRepoKey() {
-        return repoKey;
+    public String getRepositoryKey() {
+        return repositoryKey;
     }
 
-    public void setRepoKey(String repoKey) {
-        this.repoKey = repoKey;
+    public void setRepositoryKey(String repositoryKey) {
+        this.repositoryKey = repositoryKey;
     }
 
     public Collection<Repository> getRepositories() {
+        if (repositories == null)
+            repositories = new LinkedList<Repository>();
         return repositories;
-    }
-
-    public void setRepositories(Collection<Repository> repositories) {
-        this.repositories = repositories;
     }
 }

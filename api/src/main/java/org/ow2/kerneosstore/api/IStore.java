@@ -29,6 +29,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -43,10 +44,53 @@ public interface IStore {
     @POST
     @Path("/info")
     @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_XML)
     public void setInfo(StoreInfo storeInfo);
+
+    @POST
+    @Path("/module")
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_XML)
+    public Module setModule(Module module);
+
+    @GET
+    @Path("/module/{id}")
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_XML)
+    public Module getModule(@PathParam("id") Long id,
+                            @QueryParam("major") Integer major,
+                            @QueryParam("minor") Integer minor,
+                            @QueryParam("revision") Integer revision);
+
+
+    @GET
+    @Path("/module/{id}/enable")
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_XML)
+    public Module enableModule(@PathParam("id") Long id,
+                               @QueryParam("major") Integer major,
+                               @QueryParam("minor") Integer minor,
+                               @QueryParam("revision") Integer revision);
+
+
+    @GET
+    @Path("/module/{id}/disable")
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_XML)
+    public Module disableModule(@PathParam("id") Long id,
+                                @QueryParam("major") Integer major,
+                                @QueryParam("minor") Integer minor,
+                                @QueryParam("revision") Integer revision);
+
+    @GET
+    @Path("/module/{id}/download")
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Byte[] downloadModule(@PathParam("id") Long id);
 
     @GET
     @Path("/modules")
+    @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
     public Modules getModules(
             @QueryParam("filter") String filter,
@@ -56,13 +100,8 @@ public interface IStore {
             @QueryParam("page") Integer page);
 
     @GET
-    @Path("/updatedModules")
+    @Path("/modules/latest")
     @Produces(MediaType.APPLICATION_XML)
     @Consumes(MediaType.APPLICATION_XML)
     public Modules getUpdatedModules(Modules modules);
-
-    @GET
-    @Path("/download")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Byte[] downloadModule(Module module);
 }
