@@ -25,29 +25,56 @@
 
 package org.ow2.kerneosstore.api;
 
+
+import org.ow2.kerneosstore.api.util.AnyElementMapAdapter;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.HashMap;
+import java.util.Map;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Catagories {
-    private Collection<Category> category;
+public class Repository {
+    private Long id;
+    private String name;
+    private String type;
+    @XmlJavaTypeAdapter(AnyElementMapAdapter.class)
+    private Map<String, String> properties;
 
-    public Catagories() {
-
+    public Long getId() {
+        return id;
     }
 
-    public Catagories(Collection<Category> categories) {
-        this.category = categories;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Collection<Category> getCatagories() {
-        return category;
+    public String getName() {
+        return name;
     }
 
-    public void setCategories(Collection<Category> categories) {
-        this.category = categories;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Map<String, String> getProperties() {
+        if (properties == null)
+            properties = new HashMap<String, String>();
+        return properties;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

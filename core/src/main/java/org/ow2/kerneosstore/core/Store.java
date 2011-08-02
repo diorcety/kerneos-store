@@ -32,14 +32,41 @@ import java.util.Collection;
 public interface Store {
     public StoreInfo getStoreInfo();
 
-    public void setStoreInfo(StoreInfo storeInfo);
+    public StoreInfo setStoreInfo(StoreInfo storeInfo);
+
+    //
 
     public Module getModule(Long id);
 
-    public ModuleVersion getModule(Long id, Integer major, Integer minor, Integer revision);
+    public Module setModule(Module module);
 
-    public ModuleVersion setModule(ModuleVersion moduleVersion);
+    public Module removeModule(Long id);
+
+    //
+
+    public ModuleVersion getModuleVersion(Long id, Integer major, Integer minor, Integer revision);
+
+    public ModuleVersion setModuleVersion(ModuleVersion moduleVersion);
+
+    public ModuleVersion removeModuleVersion(Long id, Integer major, Integer minor, Integer revision);
 
     public Collection<ModuleVersion> getModulesByName(String filter, String order, Integer itemByPage, Integer page);
 
+    //
+
+    public Collection<RepositoryEntity> getRepositoryEntities(Long moduleId, Integer major, Integer minor, Integer revision);
+
+    public RepositoryEntity setRepositoryEntity(RepositoryEntity repositoryEntity);
+
+    public RepositoryEntity removeRepositoryEntity(Long repositoryId, Long moduleId, Integer major, Integer minor, Integer revision);
+
+    //
+
+    public Collection<Repository> getRepositoriesByType(String type);
+
+    public Repository getRepository(Long id);
+
+    public Repository setRepository(Repository repository);
+
+    public Repository removeRepository(Long id);
 }

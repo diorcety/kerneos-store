@@ -25,17 +25,21 @@
 
 package org.ow2.kerneosstore.api;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Module {
     private Long id;
-    private String name;
     private String version;
+    private String name;
     private Date date;
     private String description;
-    private Byte[] image;
+    private String author;
+    private String url;
 
     public Module() {
 
@@ -49,20 +53,20 @@ public class Module {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getVersion() {
         return version;
     }
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Date getDate() {
@@ -81,11 +85,19 @@ public class Module {
         this.description = description;
     }
 
-    public Byte[] getImage() {
-        return image;
+    public String getAuthor() {
+        return author;
     }
 
-    public void setImage(Byte[] image) {
-        this.image = image;
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

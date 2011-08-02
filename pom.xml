@@ -74,6 +74,7 @@
   <modules>
     <module>api</module>
     <module>core</module>
+    <module>repository</module>
     <module>web</module>
   </modules>
 

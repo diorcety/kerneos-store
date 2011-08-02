@@ -32,24 +32,21 @@
 
   <parent>
     <groupId>org.ow2.kerneos-store</groupId>
-    <artifactId>parent</artifactId>
+    <artifactId>repository</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>web</artifactId>
-  <name>Kerneos Store :: Web</name>
+  <artifactId>repository-maven</artifactId>
+  <name>Kerneos Store :: Repository :: Maven</name>
 
   <packaging>bundle</packaging>
 
-  <dependencies>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-      <scope>provided</scope>
-    </dependency>
+  <properties>
+    <aether.version>1.12</aether.version>
+  </properties>
 
+  <dependencies>
     <!-- iPOJO -->
     <dependency>
       <groupId>org.apache.felix</groupId>
@@ -65,19 +62,49 @@
       <version>${osgi.compendium.version}</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
-      <version>${osgi.core.version}</version>
-      <scope>provided</scope>
-    </dependency>
 
-    <!-- JAX-RS -->
+    <!-- Aether Dependencies -->
     <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-server</artifactId>
-      <version>1.8</version>
-      <scope>provided</scope>
+      <groupId>org.sonatype.aether</groupId>
+      <artifactId>aether-api</artifactId>
+      <version>${aether.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sonatype.aether</groupId>
+      <artifactId>aether-util</artifactId>
+      <version>${aether.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sonatype.aether</groupId>
+      <artifactId>aether-impl</artifactId>
+      <version>${aether.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sonatype.aether</groupId>
+      <artifactId>aether-connector-file</artifactId>
+      <version>${aether.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sonatype.aether</groupId>
+      <artifactId>aether-connector-wagon</artifactId>
+      <version>${aether.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-aether-provider</artifactId>
+      <version>3.0.3</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-http</artifactId>
+      <version>1.0</version>
+      <scope>compile</scope>
     </dependency>
 
     <!-- JEE -->
@@ -94,13 +121,6 @@
       <scope>provided</scope>
     </dependency>
 
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.0.1</version>
-      <scope>provided</scope>
-    </dependency>
-
     <!-- Log -->
     <dependency>
       <groupId>org.ow2.util</groupId>
@@ -108,20 +128,8 @@
       <version>1.0.10</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>apache-log4j-extras</artifactId>
-      <version>1.0</version>
-      <scope>provided</scope>
-    </dependency>
 
     <!-- Store -->
-    <dependency>
-      <groupId>org.ow2.kerneos-store</groupId>
-      <artifactId>api</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>org.ow2.kerneos-store</groupId>
       <artifactId>repository-common</artifactId>
@@ -143,12 +151,15 @@
         <artifactId>maven-bundle-plugin</artifactId>
         <configuration>
           <instructions>
-            <Export-Package>
-              org.ow2.kerneosstore.web;version=${project.version}
-            </Export-Package>
-            <Private-Package>
-              org.ow2.kerneosstore.web.impl;version=${project.version}
-            </Private-Package>
+            <Import-Package>
+              !org.testng.annotations,
+              !junit.framework,
+              !org.junit,
+              *
+            </Import-Package>
+            <Embed-Dependency>*;scope=compile;artifactId=!commons-logging
+            </Embed-Dependency>
+            <Embed-Transitive>true</Embed-Transitive>
           </instructions>
         </configuration>
       </plugin>

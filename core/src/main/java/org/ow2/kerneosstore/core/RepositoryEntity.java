@@ -23,31 +23,50 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.api;
+package org.ow2.kerneosstore.core;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.ManyToOne;
 
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Catagories {
-    private Collection<Category> category;
+@IdClass(RepositoryEntityPK.class)
+@Entity
+public class RepositoryEntity {
+    @ManyToOne
+    @Id
+    private ModuleVersion moduleVersion;
 
-    public Catagories() {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Id
+    private Repository repository;
 
+    @Basic
+    String key;
+
+    public ModuleVersion getModuleVersion() {
+        return moduleVersion;
     }
 
-    public Catagories(Collection<Category> categories) {
-        this.category = categories;
+    public void setModuleVersion(ModuleVersion moduleVersion) {
+        this.moduleVersion = moduleVersion;
     }
 
-    public Collection<Category> getCatagories() {
-        return category;
+    public Repository getRepository() {
+        return repository;
     }
 
-    public void setCategories(Collection<Category> categories) {
-        this.category = categories;
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

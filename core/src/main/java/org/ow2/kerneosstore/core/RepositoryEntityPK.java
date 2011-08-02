@@ -25,45 +25,28 @@
 
 package org.ow2.kerneosstore.core;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.io.Serializable;
 
-@Entity
-public class Module {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class RepositoryEntityPK implements Serializable {
 
-    @OneToMany(mappedBy = "module")
-    private Collection<ModuleVersion> versions;
+    private ModuleVersion moduleVersion;
 
-    @ManyToMany(mappedBy = "modules")
-    private Collection<Category> categories;
+    private Repository repository;
 
-    public Long getId() {
-        return id;
+    public ModuleVersion getModuleVersion() {
+        return moduleVersion;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setModuleVersion(ModuleVersion moduleVersion) {
+        this.moduleVersion = moduleVersion;
     }
 
-    public Collection<ModuleVersion> getVersions() {
-        if (versions == null)
-            versions = new LinkedList<ModuleVersion>();
-        return versions;
+    public Repository getRepository() {
+        return repository;
     }
 
-    public Collection<Category> getCategories() {
-        if (categories == null)
-            categories = new LinkedList<Category>();
-        return categories;
+    public void setRepository(Repository repository) {
+        this.repository = repository;
     }
 
     @Override
@@ -71,15 +54,19 @@ public class Module {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Module module = (Module) o;
+        RepositoryEntityPK that = (RepositoryEntityPK) o;
 
-        if (id != null ? !id.equals(module.id) : module.id != null) return false;
+        if (moduleVersion != null ? !moduleVersion.equals(that.moduleVersion) : that.moduleVersion != null)
+            return false;
+        if (repository != null ? !repository.equals(that.repository) : that.repository != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        int result = moduleVersion != null ? moduleVersion.hashCode() : 0;
+        result = 31 * result + (repository != null ? repository.hashCode() : 0);
+        return result;
     }
 }

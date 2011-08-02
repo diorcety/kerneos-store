@@ -35,62 +35,39 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 @Path("/")
-public interface IStore {
+public interface IStoreClient {
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// Store
+    ///////////////////////////////////////////////////////////////////////////
+
     @GET
     @Path("/info")
     @Produces(MediaType.APPLICATION_XML)
     public StoreInfo getInfo();
 
-    @POST
-    @Path("/info")
-    @Consumes(MediaType.APPLICATION_XML)
-    @Produces(MediaType.APPLICATION_XML)
-    public void setInfo(StoreInfo storeInfo);
 
-    @POST
-    @Path("/module")
-    @Consumes(MediaType.APPLICATION_XML)
-    @Produces(MediaType.APPLICATION_XML)
-    public Module setModule(Module module);
+    ///////////////////////////////////////////////////////////////////////////
+    /// Module
+    ///////////////////////////////////////////////////////////////////////////
 
     @GET
     @Path("/module/{id}")
-    @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
-    public Module getModule(@PathParam("id") Long id,
-                            @QueryParam("major") Integer major,
-                            @QueryParam("minor") Integer minor,
-                            @QueryParam("revision") Integer revision);
-
-
-    @GET
-    @Path("/module/{id}/enable")
-    @Consumes(MediaType.APPLICATION_XML)
-    @Produces(MediaType.APPLICATION_XML)
-    public Module enableModule(@PathParam("id") Long id,
-                               @QueryParam("major") Integer major,
-                               @QueryParam("minor") Integer minor,
-                               @QueryParam("revision") Integer revision);
-
-
-    @GET
-    @Path("/module/{id}/disable")
-    @Consumes(MediaType.APPLICATION_XML)
-    @Produces(MediaType.APPLICATION_XML)
-    public Module disableModule(@PathParam("id") Long id,
-                                @QueryParam("major") Integer major,
-                                @QueryParam("minor") Integer minor,
-                                @QueryParam("revision") Integer revision);
+    public Module getModule(@PathParam("id") Long id);
 
     @GET
     @Path("/module/{id}/download")
-    @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Byte[] downloadModule(@PathParam("id") Long id);
+    public byte[] downloadModule(@PathParam("id") Long id);
+
+    @GET
+    @Path("/module/{id}/image")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public byte[] getModuleImage(@PathParam("id") Long id);
 
     @GET
     @Path("/modules")
-    @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
     public Modules getModules(
             @QueryParam("filter") String filter,
@@ -101,7 +78,5 @@ public interface IStore {
 
     @GET
     @Path("/modules/latest")
-    @Produces(MediaType.APPLICATION_XML)
-    @Consumes(MediaType.APPLICATION_XML)
     public Modules getUpdatedModules(Modules modules);
 }

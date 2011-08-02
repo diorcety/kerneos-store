@@ -32,6 +32,7 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -57,11 +58,8 @@ public class ModuleVersion extends ModuleMeta {
     @Basic(optional = false)
     private Boolean available = false;
 
-    @Basic(optional = true)
-    private String repositoryKey;
-
-    @ManyToMany
-    private Collection<Repository> repositories;
+    @OneToMany(mappedBy = "moduleVersion")
+    private Collection<RepositoryEntity> repositoryEntities;
 
     public Integer getMajor() {
         return major;
@@ -103,17 +101,33 @@ public class ModuleVersion extends ModuleMeta {
         this.available = available;
     }
 
-    public String getRepositoryKey() {
-        return repositoryKey;
+    public Collection<RepositoryEntity> getRepositories() {
+        if (repositoryEntities == null)
+            repositoryEntities = new LinkedList<RepositoryEntity>();
+        return repositoryEntities;
     }
 
-    public void setRepositoryKey(String repositoryKey) {
-        this.repositoryKey = repositoryKey;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ModuleVersion that = (ModuleVersion) o;
+
+        if (major != null ? !major.equals(that.major) : that.major != null) return false;
+        if (minor != null ? !minor.equals(that.minor) : that.minor != null) return false;
+        if (module != null ? !module.equals(that.module) : that.module != null) return false;
+        if (revision != null ? !revision.equals(that.revision) : that.revision != null) return false;
+
+        return true;
     }
 
-    public Collection<Repository> getRepositories() {
-        if (repositories == null)
-            repositories = new LinkedList<Repository>();
-        return repositories;
+    @Override
+    public int hashCode() {
+        int result = module != null ? module.hashCode() : 0;
+        result = 31 * result + (major != null ? major.hashCode() : 0);
+        result = 31 * result + (minor != null ? minor.hashCode() : 0);
+        result = 31 * result + (revision != null ? revision.hashCode() : 0);
+        return result;
     }
 }

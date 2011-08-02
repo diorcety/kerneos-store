@@ -25,25 +25,29 @@
 
 package org.ow2.kerneosstore.api;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
 
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Modules {
-    private Module[] modules;
+    private Collection<Module> module;
 
     public Modules() {
 
     }
 
-    public Modules(Module[] modules) {
-        this.modules = modules;
+    public Modules(Collection<Module> modules) {
+        this.module = modules;
     }
 
-    public Module[] getModules() {
-        return modules;
+    public Collection<Module> getModules() {
+        return module;
     }
 
-    public void setModules(Module[] modules) {
-        this.modules = modules;
+    public void setModules(Collection<Module> modules) {
+        this.module = modules;
     }
 }

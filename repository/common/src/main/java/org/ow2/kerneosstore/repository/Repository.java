@@ -23,31 +23,16 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.api;
+package org.ow2.kerneosstore.repository;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
+import java.net.URL;
+import java.util.List;
 
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Catagories {
-    private Collection<Category> category;
+public interface Repository {
 
-    public Catagories() {
+    public List getModules();
 
-    }
+    public Object getModule(String repositoryKey);
 
-    public Catagories(Collection<Category> categories) {
-        this.category = categories;
-    }
-
-    public Collection<Category> getCatagories() {
-        return category;
-    }
-
-    public void setCategories(Collection<Category> categories) {
-        this.category = categories;
-    }
+    public URL getModuleURI(String repositoryKey);
 }

@@ -51,7 +51,7 @@ public class ModuleMeta {
     private Date date;
 
     @Lob
-    private Byte[] image;
+    private byte[] image;
 
 
     public String getName() {
@@ -94,11 +94,11 @@ public class ModuleMeta {
         this.date = date;
     }
 
-    public Byte[] getImage() {
+    public byte[] getImage() {
         return image;
     }
 
-    public void setImage(Byte[] image) {
+    public void setImage(byte[] image) {
         this.image = image;
     }
 }
