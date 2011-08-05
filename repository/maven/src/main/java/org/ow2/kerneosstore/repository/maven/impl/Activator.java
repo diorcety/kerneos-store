@@ -33,8 +33,8 @@ import org.apache.felix.ipojo.annotations.Validate;
 
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
-import org.ow2.kerneosstore.core.Repository;
-import org.ow2.kerneosstore.core.Store;
+import org.ow2.kerneosstore.api.Repository;
+import org.ow2.kerneosstore.core.EJBStoreAdmin;
 import org.ow2.util.log.Log;
 import org.ow2.util.log.LogFactory;
 
@@ -54,7 +54,7 @@ public class Activator {
     private static Log logger = LogFactory.getLog(Activator.class);
 
     @Requires
-    private Store store;
+    private EJBStoreAdmin store;
 
     @Requires
     private ConfigurationAdmin configurationAdmin;
@@ -124,6 +124,19 @@ public class Activator {
             }
         }
 
+        private boolean contains(Collection<Repository> repositories, Repository repository) {
+            // Check repository modification
+            for (Repository rep : repositories) {
+                if (rep.getId().equals(repository.getId()) &&
+                        rep.getName().equals(repository.getName()) &&
+                        rep.getType().equals(repository.getType()) &&
+                        rep.getProperties().equals(repository.getProperties())
+                        )
+                    return true;
+            }
+            return false;
+        }
+
         @Override
         public void run() {
             try {
@@ -133,7 +146,7 @@ public class Activator {
                     // Remove old repositories
                     for (Iterator<Repository> repositoryIt = configurationMap.keySet().iterator(); repositoryIt.hasNext(); ) {
                         Repository repository = repositoryIt.next();
-                        if (mavenRepositories.contains(repository)) {
+                        if (contains(mavenRepositories, repository)) {
                             mavenRepositories.remove(repository);
                         } else {
                             removeRepository(repository);

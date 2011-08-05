@@ -23,22 +23,38 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.api;
+package org.ow2.kerneosstore.core;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.ow2.kerneosstore.api.ModuleMeta;
 
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class StoreInfo {
+import javax.persistence.Basic;
+import javax.persistence.Lob;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import java.util.Date;
+
+@MappedSuperclass
+public class ModuleMetaBean implements ModuleMeta{
+    @Basic(optional = false)
     private String name;
+
+    @Basic(optional = true)
+    private String author;
+
+    @Basic(optional = true)
     private String description;
+
+    @Basic(optional = true)
     private String url;
 
-    public StoreInfo() {
+    @Temporal(TemporalType.DATE)
+    private Date date;
 
-    }
+    @Lob
+    private byte[] image;
+
 
     public String getName() {
         return name;
@@ -56,6 +72,14 @@ public class StoreInfo {
         this.description = description;
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
     public String getUrl() {
         return url;
     }
@@ -64,4 +88,19 @@ public class StoreInfo {
         this.url = url;
     }
 
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
 }

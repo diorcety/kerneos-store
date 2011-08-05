@@ -25,43 +25,15 @@
 
 package org.ow2.kerneosstore.api;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
 
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Category {
-    private Long id;
-    private String name;
-    private String descrioption;
+public interface Category {
 
-    public Category()
-    {
+    public Long getId();
 
-    }
+    public String getName();
 
-    public Long getId() {
-        return id;
-    }
+    public String getDescription();
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescrioption() {
-        return descrioption;
-    }
-
-    public void setDescrioption(String descrioption) {
-        this.descrioption = descrioption;
-    }
+    public Collection<Module> getModules();
 }

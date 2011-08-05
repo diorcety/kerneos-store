@@ -23,17 +23,9 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.api;
+package org.ow2.kerneosstore.web;
 
-import java.util.Map;
+import org.ow2.kerneosstore.api.StoreAdmin;
 
-public interface Repository {
-
-    public Long getId();
-
-    public String getName();
-
-    public String getType();
-
-    public Map<String, String> getProperties();
+public interface RSStoreAdmin extends StoreAdmin {
 }

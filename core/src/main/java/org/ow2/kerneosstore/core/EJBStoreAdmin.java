@@ -23,17 +23,13 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.api;
+package org.ow2.kerneosstore.core;
 
-import java.util.Map;
+import org.ow2.kerneosstore.api.StoreAdmin;
 
-public interface Repository {
+import javax.ejb.Local;
 
-    public Long getId();
+@Local
+public interface EJBStoreAdmin extends StoreAdmin{
 
-    public String getName();
-
-    public String getType();
-
-    public Map<String, String> getProperties();
 }

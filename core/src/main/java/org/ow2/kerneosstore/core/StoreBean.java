@@ -25,34 +25,27 @@
 
 package org.ow2.kerneosstore.core;
 
+import org.ow2.kerneosstore.api.Store;
+
 import javax.persistence.Basic;
-import javax.persistence.Lob;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
-import java.util.Date;
+@Entity(name = "Store")
+public class StoreBean implements Store {
+    @Id
+    private Long id = new Long(0);
 
-@MappedSuperclass
-public class ModuleMeta {
     @Basic(optional = false)
     private String name;
-
-    @Basic(optional = true)
-    private String author;
 
     @Basic(optional = true)
     private String description;
 
     @Basic(optional = true)
     private String url;
-
-    @Temporal(TemporalType.DATE)
-    private Date date;
-
-    @Lob
-    private byte[] image;
-
 
     public String getName() {
         return name;
@@ -70,35 +63,11 @@ public class ModuleMeta {
         this.description = description;
     }
 
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
     public String getUrl() {
         return url;
     }
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public byte[] getImage() {
-        return image;
-    }
-
-    public void setImage(byte[] image) {
-        this.image = image;
     }
 }

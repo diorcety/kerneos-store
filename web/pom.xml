@@ -124,13 +124,13 @@
     </dependency>
     <dependency>
       <groupId>org.ow2.kerneos-store</groupId>
-      <artifactId>repository-common</artifactId>
+      <artifactId>core</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.ow2.kerneos-store</groupId>
-      <artifactId>core</artifactId>
+      <artifactId>repository-common</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
@@ -144,10 +144,13 @@
         <configuration>
           <instructions>
             <Export-Package>
-              org.ow2.kerneosstore.web;version=${project.version}
+              org.ow2.kerneosstore.web;version=${project.version},
+              org.ow2.kerneosstore.web.util;version=${project.version}
             </Export-Package>
             <Private-Package>
-              org.ow2.kerneosstore.web.impl;version=${project.version}
+              org.ow2.kerneosstore.web.impl,
+              org.ow2.kerneosstore.web.impl.readers,
+              org.ow2.kerneosstore.web.impl.writers
             </Private-Package>
           </instructions>
         </configuration>

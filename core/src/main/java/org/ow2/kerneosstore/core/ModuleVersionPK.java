@@ -29,7 +29,7 @@ import java.io.Serializable;
 
 public class ModuleVersionPK implements Serializable {
 
-    private Module module;
+    private ModuleBean module;
 
     private Integer major;
 
@@ -37,11 +37,11 @@ public class ModuleVersionPK implements Serializable {
 
     private Integer revision;
 
-    public Module getModule() {
+    public ModuleBean getModule() {
         return module;
     }
 
-    public void setModule(Module module) {
+    public void setModule(ModuleBean module) {
         this.module = module;
     }
 

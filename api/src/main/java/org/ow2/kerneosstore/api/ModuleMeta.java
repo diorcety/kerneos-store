@@ -23,50 +23,19 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.core;
+package org.ow2.kerneosstore.api;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.ManyToOne;
+import java.util.Date;
 
-@IdClass(RepositoryEntityPK.class)
-@Entity
-public class RepositoryEntity {
-    @ManyToOne
-    @Id
-    private ModuleVersion moduleVersion;
+public interface ModuleMeta {
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @Id
-    private Repository repository;
+    public String getName();
 
-    @Basic
-    String key;
+    public String getDescription();
 
-    public ModuleVersion getModuleVersion() {
-        return moduleVersion;
-    }
+    public String getAuthor();
 
-    public void setModuleVersion(ModuleVersion moduleVersion) {
-        this.moduleVersion = moduleVersion;
-    }
+    public String getUrl();
 
-    public Repository getRepository() {
-        return repository;
-    }
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
+    public Date getDate();
 }

@@ -25,15 +25,13 @@
 
 package org.ow2.kerneosstore.api;
 
-import java.util.Map;
-
-public interface Repository {
-
-    public Long getId();
+public interface Store {
 
     public String getName();
 
-    public String getType();
+    public String getDescription();
 
-    public Map<String, String> getProperties();
+    public void setDescription(String description);
+
+    public String getUrl();
 }

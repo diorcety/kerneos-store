@@ -23,30 +23,41 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.core;
+package org.ow2.kerneosstore.web;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
+import org.ow2.kerneosstore.api.Category;
+import org.ow2.kerneosstore.api.Module;
 
-@Entity
-@NamedQueries({
-        @NamedQuery(name = "store.info", query = "SELECT x FROM StoreInfo as x")
-})
-public class StoreInfo {
-    @Id
-    private Long id = new Long(0);
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
-    @Basic(optional = false)
+import java.util.Collection;
+
+@XmlRootElement(name = "category")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class CategoryElement implements Category {
+    private Long id;
     private String name;
-
-    @Basic(optional = true)
     private String description;
 
-    @Basic(optional = true)
-    private String url;
+    public CategoryElement() {
+
+    }
+
+    public CategoryElement(Category category) {
+        id = category.getId();
+        name = category.getName();
+        description = category.getDescription();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -64,11 +75,8 @@ public class StoreInfo {
         this.description = description;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
+    @Override
+    public Collection<Module> getModules() {
+        return null;
     }
 }

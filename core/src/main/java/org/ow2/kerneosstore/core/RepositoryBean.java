@@ -25,21 +25,23 @@
 
 package org.ow2.kerneosstore.core;
 
+import org.ow2.kerneosstore.api.Repository;
+
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@Entity
-public class Repository {
+@Entity(name = "Repository")
+public class RepositoryBean implements Repository {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -53,8 +55,8 @@ public class Repository {
     @ElementCollection(fetch = FetchType.EAGER)
     private Map<String, String> properties;
 
-    @OneToMany(mappedBy = "repository", orphanRemoval = true)
-    private Collection<RepositoryEntity> repositoryEntities;
+    @OneToMany(mappedBy = "repository", cascade = CascadeType.REMOVE)
+    private Collection<RepositoryEntityBean> repositoryEntities;
 
     public Long getId() {
         return id;
@@ -86,12 +88,15 @@ public class Repository {
         return properties;
     }
 
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
 
-    public Collection<RepositoryEntity> getRepositoryEntities() {
+    public Collection getRepositoryEntities() {
         return repositoryEntities;
     }
 
-    public void setRepositoryEntities(Collection<RepositoryEntity> repositoryEntities) {
+    public void setRepositoryEntities(Collection<RepositoryEntityBean> repositoryEntities) {
         this.repositoryEntities = repositoryEntities;
     }
 
@@ -100,22 +105,15 @@ public class Repository {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Repository that = (Repository) o;
+        RepositoryBean that = (RepositoryBean) o;
 
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (properties != null ? !properties.equals(that.properties) : that.properties != null) return false;
-        if (type != null ? !type.equals(that.type) : that.type != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        result = 31 * result + (properties != null ? properties.hashCode() : 0);
-        return result;
+        return id != null ? id.hashCode() : 0;
     }
 }

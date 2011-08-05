@@ -23,7 +23,7 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.api.util;
+package org.ow2.kerneosstore.web.util;
 
 
 import org.w3c.dom.Document;

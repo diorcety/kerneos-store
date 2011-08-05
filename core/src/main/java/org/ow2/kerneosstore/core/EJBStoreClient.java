@@ -23,31 +23,13 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.api;
+package org.ow2.kerneosstore.core;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
 
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Modules {
-    private Collection<Module> module;
+import org.ow2.kerneosstore.api.StoreClient;
 
-    public Modules() {
+import javax.ejb.Local;
 
-    }
-
-    public Modules(Collection<Module> modules) {
-        this.module = modules;
-    }
-
-    public Collection<Module> getModules() {
-        return module;
-    }
-
-    public void setModules(Collection<Module> modules) {
-        this.module = modules;
-    }
+@Local
+public interface EJBStoreClient extends StoreClient {
 }

@@ -25,25 +25,32 @@
 
 package org.ow2.kerneosstore.core.impl;
 
-
-import org.ow2.kerneosstore.core.Module;
-import org.ow2.kerneosstore.core.ModuleVersion;
+import org.ow2.kerneosstore.api.Category;
+import org.ow2.kerneosstore.api.ModuleVersion;
+import org.ow2.kerneosstore.api.Repository;
+import org.ow2.kerneosstore.api.Store;
+import org.ow2.kerneosstore.core.CategoryBean;
+import org.ow2.kerneosstore.core.EJBStoreAdmin;
+import org.ow2.kerneosstore.core.EJBStoreClient;
+import org.ow2.kerneosstore.core.ModuleBean;
+import org.ow2.kerneosstore.core.ModuleVersionBean;
 import org.ow2.kerneosstore.core.ModuleVersionPK;
-import org.ow2.kerneosstore.core.Repository;
-import org.ow2.kerneosstore.core.RepositoryEntity;
+import org.ow2.kerneosstore.core.RepositoryBean;
+import org.ow2.kerneosstore.core.RepositoryEntityBean;
 import org.ow2.kerneosstore.core.RepositoryEntityPK;
-import org.ow2.kerneosstore.core.Store;
-import org.ow2.kerneosstore.core.StoreInfo;
+import org.ow2.kerneosstore.core.StoreBean;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 @Stateless
-public class StoreLocal implements Store {
+public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
 
     /**
      * Entity manager used by this session bean.
@@ -55,13 +62,22 @@ public class StoreLocal implements Store {
     /// Store
     ///////////////////////////////////////////////////////////////////////////
 
-    public StoreInfo getStoreInfo() {
-        return (StoreInfo) entityManager.createNamedQuery("store.info").getSingleResult();
+    public StoreBean getStore() {
+        String strQuery = "SELECT x FROM Store x";
+
+        // Create the query
+        Query q = entityManager.createQuery(strQuery);
+
+        return (StoreBean) q.getSingleResult();
     }
 
     @Override
-    public StoreInfo setStoreInfo(StoreInfo storeInfo) {
-        return entityManager.merge(storeInfo);
+    public void setStore(Store store) {
+        StoreBean storeBean = new StoreBean();
+        storeBean.setName(store.getName());
+        storeBean.setDescription(store.getDescription());
+        storeBean.setUrl(store.getUrl());
+        entityManager.merge(storeBean);
     }
 
 
@@ -69,31 +85,41 @@ public class StoreLocal implements Store {
     /// Module
     ///////////////////////////////////////////////////////////////////////////
 
-    @Override
-    public Module getModule(Long id) {
+    public ModuleBean getModule(Long id) {
         String strQuery = "SELECT x FROM Module x WHERE x.id = :id";
 
         // Create the query
         Query q = entityManager.createQuery(strQuery);
         q.setParameter("id", id);
 
-        Module module = (Module) q.getSingleResult();
+        ModuleBean module = (ModuleBean) q.getSingleResult();
+
         // Force EAGER
         module.getVersions().size();
         module.getCategories().size();
+
         return module;
     }
 
     @Override
-    public Module setModule(Module module) {
-        return entityManager.merge(module);
+    public Collection<ModuleVersion> getModules(Long id) {
+        String strQuery = "SELECT x FROM Module x WHERE x.id = :id";
+
+        // Create the query
+        Query q = entityManager.createQuery(strQuery);
+        q.setParameter("id", id);
+
+        ModuleBean module = (ModuleBean) q.getSingleResult();
+
+        // Force EAGER
+        module.getVersions().size();
+        return module.getVersions();
     }
 
     @Override
-    public Module removeModule(Long id) {
-        Module module = entityManager.find(Module.class, id);
+    public void removeModule(Long id) {
+        ModuleBean module = entityManager.find(ModuleBean.class, id);
         entityManager.remove(module);
-        return module;
     }
 
 
@@ -102,7 +128,48 @@ public class StoreLocal implements Store {
     ///////////////////////////////////////////////////////////////////////////
 
     @Override
-    public ModuleVersion getModuleVersion(Long id, Integer major, Integer minor, Integer revision) {
+    public void enableModuleVersion(Long id, Integer major, Integer minor, Integer revision) {
+        ModuleVersionBean moduleVersion = getModuleVersion(id, major, minor, revision);
+        moduleVersion.setAvailable(true);
+    }
+
+    @Override
+    public void disableModuleVersion(Long id, Integer major, Integer minor, Integer revision) {
+        ModuleVersionBean moduleVersion = getModuleVersion(id, major, minor, revision);
+        moduleVersion.setAvailable(false);
+    }
+
+    @Override
+    public byte[] getModuleVersionImage(Long id) {
+        return getModuleVersionImage(id, null, null, null);
+    }
+
+    @Override
+    public byte[] getModuleVersionImage(Long id, Integer major, Integer minor, Integer revision) {
+        return getModuleVersion(id, major, minor, revision).getImage();
+    }
+
+    @Override
+    public void setModuleVersionImage(Long id, Integer major, Integer minor, Integer revision, byte[] data) {
+        ModuleVersionBean moduleVersion = getModuleVersion(id, major, minor, revision);
+        moduleVersion.setImage(data);
+    }
+
+    @Override
+    public void removeModuleVersionImage(Long id, Integer major, Integer minor, Integer revision) {
+        ModuleVersionBean moduleVersion = getModuleVersion(id, major, minor, revision);
+        byte[] data = moduleVersion.getImage();
+        moduleVersion.setImage(null);
+    }
+
+    @Override
+    public ModuleVersionBean getModuleVersion(Long id) {
+        return getModuleVersion(id, null, null, null);
+    }
+
+
+    @Override
+    public ModuleVersionBean getModuleVersion(Long id, Integer major, Integer minor, Integer revision) {
         String strQuery = "SELECT x FROM ModuleVersion x WHERE x.module.id = :id";
         if (major != null && minor != null && revision != null)
             strQuery += " AND x.major = :major AND x.minor = :minor AND x.revision = :revision";
@@ -119,29 +186,64 @@ public class StoreLocal implements Store {
             q.setParameter("revision", revision);
         }
 
-        return (ModuleVersion) q.getSingleResult();
+        return (ModuleVersionBean) q.getSingleResult();
     }
 
     @Override
-    public ModuleVersion setModuleVersion(ModuleVersion moduleVersion) {
-        return entityManager.merge(moduleVersion);
+    public Long setModuleVersion(ModuleVersion moduleVersion) {
+        ModuleVersionBean moduleVersionBean;
+
+        // Get or Create the entity
+        if (moduleVersion.getModule().getId() != null) {
+            // Create the PK
+            ModuleVersionPK pk = new ModuleVersionPK();
+            pk.setModule(getModule(moduleVersion.getModule().getId()));
+            pk.setMajor(moduleVersion.getMajor());
+            pk.setMinor(moduleVersion.getMinor());
+            pk.setRevision(moduleVersion.getRevision());
+
+            moduleVersionBean = entityManager.find(ModuleVersionBean.class, pk);
+            if (moduleVersionBean == null) {
+                moduleVersionBean = new ModuleVersionBean();
+                moduleVersionBean.setModule(pk.getModule());
+                moduleVersionBean.setMajor(pk.getMajor());
+                moduleVersionBean.setMinor(pk.getMinor());
+                moduleVersionBean.setRevision(pk.getRevision());
+            }
+        } else {
+            ModuleBean module = new ModuleBean();
+            entityManager.persist(module);
+
+            moduleVersionBean = new ModuleVersionBean();
+            moduleVersionBean.setModule(module);
+            moduleVersionBean.setMajor(moduleVersion.getMajor());
+            moduleVersionBean.setMinor(moduleVersion.getMinor());
+            moduleVersionBean.setRevision(moduleVersion.getRevision());
+        }
+
+        moduleVersionBean.setAuthor(moduleVersion.getAuthor());
+        moduleVersionBean.setDate(moduleVersion.getDate());
+        moduleVersionBean.setDescription(moduleVersion.getDescription());
+        moduleVersionBean.setName(moduleVersion.getName());
+        moduleVersionBean.setUrl(moduleVersion.getUrl());
+
+        return entityManager.merge(moduleVersionBean).getModule().getId();
     }
 
     @Override
-    public ModuleVersion removeModuleVersion(Long id, Integer major, Integer minor, Integer revision) {
+    public void removeModuleVersion(Long id, Integer major, Integer minor, Integer revision) {
         ModuleVersionPK pk = new ModuleVersionPK();
-        pk.setModule(entityManager.find(Module.class, id));
+        pk.setModule(entityManager.find(ModuleBean.class, id));
         pk.setMajor(major);
         pk.setMinor(minor);
         pk.setRevision(revision);
 
-        ModuleVersion moduleVersion = entityManager.find(ModuleVersion.class, pk);
+        ModuleVersionBean moduleVersion = entityManager.find(ModuleVersionBean.class, pk);
         entityManager.remove(moduleVersion);
-        return moduleVersion;
     }
 
     @Override
-    public Collection<ModuleVersion> getModulesByName(String filter, String order, Integer itemByPage, Integer page) {
+    public Collection getModulesByName(String filter, String order, Integer itemByPage, Integer page) {
         String strQuery = "SELECT x FROM ModuleVersion x";
         if (filter != null) {
             strQuery += " WHERE x.name LIKE %:filter%";
@@ -161,35 +263,58 @@ public class StoreLocal implements Store {
             }
         }
 
-        return (Collection<ModuleVersion>) q.getResultList();
+        return q.getResultList();
     }
 
 
     ///////////////////////////////////////////////////////////////////////////
-    /// Repository
+    /// Repository  Entity
     ///////////////////////////////////////////////////////////////////////////
 
-    public Collection<RepositoryEntity> getRepositoryEntities(Long moduleId, Integer major, Integer minor, Integer revision) {
-        Collection<RepositoryEntity> repositoryEntities = getModuleVersion(moduleId, major, minor, revision).getRepositories();
 
-        // Force EAGER
-        repositoryEntities.size();
-
-        return repositoryEntities;
+    public Map getRepositoryEntries(Long moduleId) {
+        return getRepositoryEntries(moduleId, null, null, null);
     }
 
-    public RepositoryEntity setRepositoryEntity(RepositoryEntity repositoryEntity) {
-        return entityManager.merge(repositoryEntity);
+    public Map getRepositoryEntries(Long moduleId, Integer major, Integer minor, Integer revision) {
+        Map map = new HashMap();
+
+        for (RepositoryEntityBean entityBean : getModuleVersion(moduleId, major, minor, revision).getRepositoryEntities()) {
+            map.put(entityBean.getRepository(), entityBean.getKey());
+        }
+
+        return map;
     }
 
-    public RepositoryEntity removeRepositoryEntity(Long repositoryId, Long moduleId, Integer major, Integer minor, Integer revision) {
+    public void setRepositoryEntry(Long repositoryId, Long id, Integer major, Integer minor, Integer revision, String key) {
+        RepositoryEntityBean repositoryEntityBean;
+
+        // Create the PK
+        RepositoryEntityPK pk = new RepositoryEntityPK();
+        pk.setRepository(getRepository(repositoryId));
+        pk.setModuleVersion(getModuleVersion(id, major, minor, revision));
+
+        // Get or Create the entity
+        repositoryEntityBean = entityManager.find(RepositoryEntityBean.class, pk);
+        if (repositoryEntityBean == null) {
+            repositoryEntityBean = new RepositoryEntityBean();
+            repositoryEntityBean.setModuleVersion(pk.getModuleVersion());
+            repositoryEntityBean.setRepository(pk.getRepository());
+        }
+
+        // Set the fields
+        repositoryEntityBean.setKey(key);
+
+        entityManager.merge(repositoryEntityBean);
+    }
+
+    public void removeRepositoryEntry(Long repositoryId, Long moduleId, Integer major, Integer minor, Integer revision) {
         RepositoryEntityPK pk = new RepositoryEntityPK();
         pk.setModuleVersion(getModuleVersion(moduleId, major, minor, revision));
         pk.setRepository(getRepository(repositoryId));
 
-        RepositoryEntity repositoryEntity = entityManager.find(RepositoryEntity.class, pk);
+        RepositoryEntityBean repositoryEntity = entityManager.find(RepositoryEntityBean.class, pk);
         entityManager.remove(repositoryEntity);
-        return repositoryEntity;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -197,37 +322,121 @@ public class StoreLocal implements Store {
     ///////////////////////////////////////////////////////////////////////////
 
     @Override
-    public Collection<Repository> getRepositoriesByType(String type) {
+    public Collection getRepositoriesByType(String type) {
         String strQuery = "SELECT x FROM Repository x WHERE x.type = :type";
 
         // Create the query
         Query q = entityManager.createQuery(strQuery);
         q.setParameter("type", type);
 
-        return (Collection<Repository>) q.getResultList();
+        return (Collection<RepositoryBean>) q.getResultList();
     }
 
     @Override
-    public Repository getRepository(Long id) {
+    public RepositoryBean getRepository(Long id) {
         String strQuery = "SELECT x FROM Repository x WHERE x.id = :id";
 
         // Create the query
         Query q = entityManager.createQuery(strQuery);
         q.setParameter("id", id);
 
-        return (Repository) q.getSingleResult();
+        return (RepositoryBean) q.getSingleResult();
     }
 
     @Override
-    public Repository setRepository(Repository repository) {
-        return entityManager.merge(repository);
+    public Long setRepository(Repository repository) {
+        RepositoryBean repositoryBean;
+
+        // Get or Create the entity
+        if (repository.getId() != null)
+            repositoryBean = getRepository(repository.getId());
+        else
+            repositoryBean = new RepositoryBean();
+
+        // Set the fields
+        repositoryBean.setName(repository.getName());
+        repositoryBean.setType(repository.getType());
+        repositoryBean.setProperties(repository.getProperties());
+
+        return entityManager.merge(repositoryBean).getId();
     }
 
 
     @Override
-    public Repository removeRepository(Long id) {
-        Repository repository = entityManager.find(Repository.class, id);
+    public void removeRepository(Long id) {
+        RepositoryBean repository = entityManager.find(RepositoryBean.class, id);
         entityManager.remove(repository);
-        return repository;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// Category
+    ///////////////////////////////////////////////////////////////////////////
+
+
+    @Override
+    public CategoryBean getCategory(Long id) {
+        String strQuery = "SELECT x FROM Category x WHERE x.id = :id";
+
+        // Create the query
+        Query q = entityManager.createQuery(strQuery);
+        q.setParameter("id", id);
+
+        return (CategoryBean) q.getSingleResult();
+    }
+
+    @Override
+    public Collection getCategories() {
+        String strQuery = "SELECT x FROM Category x";
+
+        // Create the query
+        Query q = entityManager.createQuery(strQuery);
+
+        return (Collection<CategoryBean>) q.getResultList();
+    }
+
+    @Override
+    public Long setCategory(Category category) {
+        CategoryBean categoryBean;
+
+        // Get or Create the entity
+        if (category.getId() != null)
+            categoryBean = getCategory(category.getId());
+        else
+            categoryBean = new CategoryBean();
+
+        categoryBean.setName(category.getName());
+        categoryBean.setDescription(category.getDescription());
+        entityManager.persist(categoryBean);
+
+        return categoryBean.getId();
+    }
+
+    @Override
+    public void removeCategory(Long id) {
+        CategoryBean category = entityManager.find(CategoryBean.class, id);
+        for (Iterator<ModuleBean> moduleIt = category.getModules().iterator(); moduleIt.hasNext(); ) {
+            ModuleBean module = moduleIt.next();
+            module.getCategories().remove(category);
+            moduleIt.remove();
+        }
+        entityManager.remove(category);
+    }
+
+    @Override
+    public void addModuleToCategory(Long categoryId, Long moduleId) {
+        CategoryBean category = getCategory(categoryId);
+        ModuleBean module = getModule(moduleId);
+
+        category.getModules().add(module);
+        module.getCategories().add(category);
+    }
+
+    @Override
+    public void removeModuleFromCategory(Long categoryId, Long moduleId) {
+        CategoryBean category = getCategory(categoryId);
+        ModuleBean module = getModule(moduleId);
+
+        category.getModules().remove(module);
+        module.getCategories().remove(category);
     }
 }

@@ -23,31 +23,17 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.api;
+package org.ow2.kerneosstore.web;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.ow2.kerneosstore.api.StoreClient;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import java.util.Collection;
 
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Catagories {
-    private Collection<Category> category;
-
-    public Catagories() {
-
-    }
-
-    public Catagories(Collection<Category> categories) {
-        this.category = categories;
-    }
-
-    public Collection<Category> getCatagories() {
-        return category;
-    }
-
-    public void setCategories(Collection<Category> categories) {
-        this.category = categories;
-    }
+public interface RSStoreClient extends StoreClient{
 }

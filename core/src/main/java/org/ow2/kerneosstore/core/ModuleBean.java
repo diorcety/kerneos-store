@@ -25,26 +25,29 @@
 
 package org.ow2.kerneosstore.core;
 
+import org.ow2.kerneosstore.api.Module;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import java.util.Collection;
-import java.util.LinkedList;
 
-@Entity
-public class Module {
+@Entity(name = "Module")
+public class ModuleBean implements Module {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "module")
-    private Collection<ModuleVersion> versions;
+    @OneToMany(mappedBy = "module", cascade = CascadeType.REMOVE)
+    private Collection<ModuleVersionBean> versions;
 
-    @ManyToMany(mappedBy = "modules")
-    private Collection<Category> categories;
+    @ManyToMany(mappedBy = "modules", fetch = FetchType.EAGER)
+    private Collection<CategoryBean> categories;
 
     public Long getId() {
         return id;
@@ -54,16 +57,20 @@ public class Module {
         this.id = id;
     }
 
-    public Collection<ModuleVersion> getVersions() {
-        if (versions == null)
-            versions = new LinkedList<ModuleVersion>();
+    public Collection getVersions() {
         return versions;
     }
 
-    public Collection<Category> getCategories() {
-        if (categories == null)
-            categories = new LinkedList<Category>();
+    public void setVersions(Collection<ModuleVersionBean> versions) {
+        this.versions = versions;
+    }
+
+    public Collection getCategories() {
         return categories;
+    }
+
+    public void setCategories(Collection<CategoryBean> categories) {
+        this.categories = categories;
     }
 
     @Override
@@ -71,9 +78,9 @@ public class Module {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Module module = (Module) o;
+        ModuleBean that = (ModuleBean) o;
 
-        if (id != null ? !id.equals(module.id) : module.id != null) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
 
         return true;
     }

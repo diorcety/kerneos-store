@@ -25,15 +25,13 @@
 
 package org.ow2.kerneosstore.api;
 
-import java.util.Map;
+public interface ModuleVersion extends ModuleMeta {
 
-public interface Repository {
+    public Module getModule();
 
-    public Long getId();
+    public Integer getMajor();
 
-    public String getName();
+    public Integer getMinor();
 
-    public String getType();
-
-    public Map<String, String> getProperties();
+    public Integer getRevision();
 }

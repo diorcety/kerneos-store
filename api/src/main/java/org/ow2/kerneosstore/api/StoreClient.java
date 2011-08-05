@@ -25,15 +25,31 @@
 
 package org.ow2.kerneosstore.api;
 
+import java.util.Collection;
 import java.util.Map;
 
-public interface Repository {
+public interface StoreClient {
 
-    public Long getId();
+    // Store
 
-    public String getName();
+    public Store getStore();
 
-    public String getType();
+    // RepositoryEntry
 
-    public Map<String, String> getProperties();
+    public Map<Repository, String> getRepositoryEntries(Long moduleId);
+
+    // ModuleVersion
+
+    public byte[] getModuleVersionImage(Long id);
+
+    public ModuleVersion getModuleVersion(Long id);
+
+    public Collection<ModuleVersion> getModulesByName(String filter, String order, Integer itemByPage, Integer page);
+
+    // Category
+
+    public Collection<Category> getCategories();
+
+    public Category getCategory(Long id);
+
 }

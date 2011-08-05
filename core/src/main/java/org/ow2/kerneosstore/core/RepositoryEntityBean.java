@@ -25,13 +25,26 @@
 
 package org.ow2.kerneosstore.core;
 
-import java.io.Serializable;
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.ManyToOne;
 
-public class RepositoryEntityPK implements Serializable {
-
+@IdClass(RepositoryEntityPK.class)
+@Entity(name = "RepositoryEntity")
+public class RepositoryEntityBean {
+    @ManyToOne
+    @Id
     private ModuleVersionBean moduleVersion;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Id
     private RepositoryBean repository;
+
+    @Basic
+    String key;
 
     public ModuleVersionBean getModuleVersion() {
         return moduleVersion;
@@ -49,24 +62,11 @@ public class RepositoryEntityPK implements Serializable {
         this.repository = repository;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        RepositoryEntityPK that = (RepositoryEntityPK) o;
-
-        if (moduleVersion != null ? !moduleVersion.equals(that.moduleVersion) : that.moduleVersion != null)
-            return false;
-        if (repository != null ? !repository.equals(that.repository) : that.repository != null) return false;
-
-        return true;
+    public String getKey() {
+        return key;
     }
 
-    @Override
-    public int hashCode() {
-        int result = moduleVersion != null ? moduleVersion.hashCode() : 0;
-        result = 31 * result + (repository != null ? repository.hashCode() : 0);
-        return result;
+    public void setKey(String key) {
+        this.key = key;
     }
 }

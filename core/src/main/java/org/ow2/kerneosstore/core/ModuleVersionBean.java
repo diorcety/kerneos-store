@@ -25,23 +25,24 @@
 
 package org.ow2.kerneosstore.core;
 
+import org.ow2.kerneosstore.api.ModuleVersion;
+
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.util.Collection;
-import java.util.LinkedList;
 
 @IdClass(ModuleVersionPK.class)
-@Entity
-public class ModuleVersion extends ModuleMeta {
+@Entity(name = "ModuleVersion")
+public class ModuleVersionBean extends ModuleMetaBean implements ModuleVersion{
     @ManyToOne(fetch = FetchType.EAGER)
     @Id
-    private Module module;
+    private ModuleBean module;
 
     @Basic(optional = false)
     @Id
@@ -58,8 +59,8 @@ public class ModuleVersion extends ModuleMeta {
     @Basic(optional = false)
     private Boolean available = false;
 
-    @OneToMany(mappedBy = "moduleVersion")
-    private Collection<RepositoryEntity> repositoryEntities;
+    @OneToMany(mappedBy = "moduleVersion", cascade = CascadeType.REMOVE)
+    private Collection<RepositoryEntityBean> repositoryEntities;
 
     public Integer getMajor() {
         return major;
@@ -85,11 +86,11 @@ public class ModuleVersion extends ModuleMeta {
         this.revision = revision;
     }
 
-    public Module getModule() {
+    public ModuleBean getModule() {
         return module;
     }
 
-    public void setModule(Module module) {
+    public void setModule(ModuleBean module) {
         this.module = module;
     }
 
@@ -101,10 +102,12 @@ public class ModuleVersion extends ModuleMeta {
         this.available = available;
     }
 
-    public Collection<RepositoryEntity> getRepositories() {
-        if (repositoryEntities == null)
-            repositoryEntities = new LinkedList<RepositoryEntity>();
+    public Collection<RepositoryEntityBean> getRepositoryEntities() {
         return repositoryEntities;
+    }
+
+    public void setRepositoryEntities(Collection<RepositoryEntityBean> repositoryEntities) {
+        this.repositoryEntities = repositoryEntities;
     }
 
     @Override
@@ -112,7 +115,7 @@ public class ModuleVersion extends ModuleMeta {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ModuleVersion that = (ModuleVersion) o;
+        ModuleVersionBean that = (ModuleVersionBean) o;
 
         if (major != null ? !major.equals(that.major) : that.major != null) return false;
         if (minor != null ? !minor.equals(that.minor) : that.minor != null) return false;

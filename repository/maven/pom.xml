@@ -132,13 +132,19 @@
     <!-- Store -->
     <dependency>
       <groupId>org.ow2.kerneos-store</groupId>
-      <artifactId>repository-common</artifactId>
+      <artifactId>api</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.ow2.kerneos-store</groupId>
       <artifactId>core</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.kerneos-store</groupId>
+      <artifactId>repository-common</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>

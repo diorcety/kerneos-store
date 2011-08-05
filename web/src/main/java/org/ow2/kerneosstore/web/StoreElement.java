@@ -23,25 +23,53 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.core;
+package org.ow2.kerneosstore.web;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import java.util.Collection;
+import org.ow2.kerneosstore.api.Store;
 
-@Entity
-public class Category {
-    @Id
-    private Long id;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
-    @Basic(optional = false)
+@XmlRootElement(name = "store")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class StoreElement implements Store {
     private String name;
-
-    @Basic(optional = true)
     private String description;
+    private String url;
 
-    @ManyToMany
-    private Collection<Module> modules;
+    public StoreElement() {
+
+    }
+
+    public StoreElement(Store store) {
+        name = store.getName();
+        description = store.getDescription();
+        url = store.getUrl();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
 }
