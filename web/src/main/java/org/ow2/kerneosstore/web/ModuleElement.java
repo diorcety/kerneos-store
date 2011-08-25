@@ -31,6 +31,8 @@ import org.ow2.kerneosstore.api.ModuleVersion;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import java.util.Collection;
@@ -44,17 +46,18 @@ import java.util.regex.Pattern;
 public class ModuleElement implements ModuleVersion {
     private static Pattern versionPattern = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)");
 
-    private Long id;
+    private String id;
     private String version;
     private String name;
     private Date date;
     private String description;
     private String author;
     private String url;
+    @XmlElementWrapper(name = "categories")
+    @XmlElement(name = "category")
     private Collection<CategoryElement> categories;
 
-    public ModuleElement()
-    {
+    public ModuleElement() {
 
     }
 
@@ -72,7 +75,7 @@ public class ModuleElement implements ModuleVersion {
         }
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
@@ -133,14 +136,14 @@ public class ModuleElement implements ModuleVersion {
     }
 
     class SimpleModule implements Module {
-        private Long id;
+        private String id;
 
-        SimpleModule(Long id) {
+        SimpleModule(String id) {
             this.id = id;
         }
 
         @Override
-        public Long getId() {
+        public String getId() {
             return id;
         }
 

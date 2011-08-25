@@ -40,8 +40,7 @@ import java.util.Collection;
 @Entity(name = "Module")
 public class ModuleBean implements Module {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @OneToMany(mappedBy = "module", cascade = CascadeType.REMOVE)
     private Collection<ModuleVersionBean> versions;
@@ -49,15 +48,15 @@ public class ModuleBean implements Module {
     @ManyToMany(mappedBy = "modules", fetch = FetchType.EAGER)
     private Collection<CategoryBean> categories;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Collection getVersions() {
+    public Collection<ModuleVersionBean> getVersions() {
         return versions;
     }
 
@@ -65,7 +64,7 @@ public class ModuleBean implements Module {
         this.versions = versions;
     }
 
-    public Collection getCategories() {
+    public Collection<CategoryBean> getCategories() {
         return categories;
     }
 

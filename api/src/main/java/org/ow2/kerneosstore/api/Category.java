@@ -27,13 +27,9 @@ package org.ow2.kerneosstore.api;
 
 import java.util.Collection;
 
-public interface Category {
+public interface Category extends CategoryMeta {
 
-    public Long getId();
+    public String getId();
 
-    public String getName();
-
-    public String getDescription();
-
-    public Collection<Module> getModules();
+    public Collection<? extends Module> getModules();
 }

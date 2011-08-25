@@ -38,8 +38,11 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.http.NamespaceException;
 
 import org.ow2.kerneosstore.api.Category;
+import org.ow2.kerneosstore.api.CategoryMeta;
+import org.ow2.kerneosstore.api.ModuleMeta;
 import org.ow2.kerneosstore.api.ModuleVersion;
 import org.ow2.kerneosstore.api.Repository;
+import org.ow2.kerneosstore.api.RepositoryMeta;
 import org.ow2.kerneosstore.api.Store;
 import org.ow2.kerneosstore.core.EJBStoreAdmin;
 import org.ow2.kerneosstore.web.ModuleElement;
@@ -143,18 +146,21 @@ public class StoreAdminImpl implements RSStoreAdmin {
 
 
     @POST
-    @Path("/module")
+    @Path("/module/{id}/{major}/{minor}/{revision}")
     @Consumes(MediaType.APPLICATION_XML)
-    @Produces(MediaType.TEXT_PLAIN)
-    public Long setModuleVersion(ModuleVersion module) {
-        return storeAdmin.setModuleVersion(module);
+    public void setModuleVersion(@PathParam("id") String id,
+                                 @PathParam("major") Integer major,
+                                 @PathParam("minor") Integer minor,
+                                 @PathParam("revision") Integer revision,
+                                 ModuleMeta module) {
+        storeAdmin.setModuleVersion(id, major, minor, revision, module);
     }
 
     @Override
     @GET
     @Path("/module/{id}/{major}/{minor}/{revision}")
     @Produces(MediaType.APPLICATION_XML)
-    public ModuleElement getModuleVersion(@PathParam("id") Long id,
+    public ModuleElement getModuleVersion(@PathParam("id") String id,
                                           @PathParam("major") Integer major,
                                           @PathParam("minor") Integer minor,
                                           @PathParam("revision") Integer revision) {
@@ -165,7 +171,7 @@ public class StoreAdminImpl implements RSStoreAdmin {
     @GET
     @Path("/modules/{id}")
     @Produces(MediaType.APPLICATION_XML)
-    public Collection getModules(@PathParam("id") Long id) {
+    public Collection<ModuleElement> getModules(@PathParam("id") String id) {
         Collection<ModuleElement> moduleElements = new LinkedList<ModuleElement>();
         for (ModuleVersion moduleVersion : storeAdmin.getModules(id)) {
             moduleElements.add(new ModuleElement(moduleVersion));
@@ -174,9 +180,16 @@ public class StoreAdminImpl implements RSStoreAdmin {
     }
 
     @Override
+    @DELETE
+    @Path("/modules/{id}")
+    public void removeModule(@PathParam("id") String id) {
+        storeAdmin.removeModule(id);
+    }
+
+    @Override
     @GET
     @Path("/module/{id}/{major}/{minor}/{revision}/enable")
-    public void enableModuleVersion(@PathParam("id") Long id,
+    public void enableModuleVersion(@PathParam("id") String id,
                                     @PathParam("major") Integer major,
                                     @PathParam("minor") Integer minor,
                                     @PathParam("revision") Integer revision) {
@@ -186,7 +199,7 @@ public class StoreAdminImpl implements RSStoreAdmin {
     @Override
     @GET
     @Path("/module/{id}/{major}/{minor}/{revision}/disable")
-    public void disableModuleVersion(@PathParam("id") Long id,
+    public void disableModuleVersion(@PathParam("id") String id,
                                      @PathParam("major") Integer major,
                                      @PathParam("minor") Integer minor,
                                      @PathParam("revision") Integer revision) {
@@ -197,7 +210,7 @@ public class StoreAdminImpl implements RSStoreAdmin {
     @DELETE
     @Path("/module/{id}/{major}/{minor}/{revision}")
     @Produces(MediaType.APPLICATION_XML)
-    public void removeModuleVersion(@PathParam("id") Long id,
+    public void removeModuleVersion(@PathParam("id") String id,
                                     @PathParam("major") Integer major,
                                     @PathParam("minor") Integer minor,
                                     @PathParam("revision") Integer revision) {
@@ -219,13 +232,12 @@ public class StoreAdminImpl implements RSStoreAdmin {
         storeAdmin.removeRepository(id);
     }
 
-
     @POST
-    @Path("/repository")
+    @Path("/repository/{id}")
     @Consumes(MediaType.APPLICATION_XML)
-    @Produces(MediaType.TEXT_PLAIN)
-    public Long setRepository(Repository repository) {
-        return storeAdmin.setRepository(repository);
+    public void setRepository(@PathParam("id") Long id,
+                              RepositoryMeta repository) {
+        storeAdmin.setRepository(id, repository);
     }
 
     @Override
@@ -233,7 +245,7 @@ public class StoreAdminImpl implements RSStoreAdmin {
     @Path("/repository/{repositoryId}/module/{moduleId}/{major}/{minor}/{revision}")
     @Consumes(MediaType.TEXT_PLAIN)
     public void setRepositoryEntry(@PathParam("repositoryId") Long repositoryId,
-                                   @PathParam("moduleId") Long id,
+                                   @PathParam("moduleId") String id,
                                    @PathParam("major") Integer major,
                                    @PathParam("minor") Integer minor,
                                    @PathParam("revision") Integer revision,
@@ -245,7 +257,7 @@ public class StoreAdminImpl implements RSStoreAdmin {
     @DELETE
     @Path("/repository/{repositoryId}/module/{moduleId}/{major}/{minor}/{revision}")
     public void removeRepositoryEntry(@PathParam("repositoryId") Long repositoryId,
-                                      @PathParam("moduleId") Long id,
+                                      @PathParam("moduleId") String id,
                                       @PathParam("major") Integer major,
                                       @PathParam("minor") Integer minor,
                                       @PathParam("revision") Integer revision) {
@@ -257,7 +269,7 @@ public class StoreAdminImpl implements RSStoreAdmin {
     @Path("/module/{id}/{major}/{minor}/{revision}/image")
     @Consumes(MediaType.APPLICATION_OCTET_STREAM)
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public byte[] getModuleVersionImage(@PathParam("id") Long id,
+    public byte[] getModuleVersionImage(@PathParam("id") String id,
                                         @PathParam("major") Integer major,
                                         @PathParam("minor") Integer minor,
                                         @PathParam("revision") Integer revision) {
@@ -268,7 +280,7 @@ public class StoreAdminImpl implements RSStoreAdmin {
     @POST
     @Path("/module/{id}/{major}/{minor}/{revision}/image")
     @Consumes(MediaType.APPLICATION_OCTET_STREAM)
-    public void setModuleVersionImage(@PathParam("id") Long id,
+    public void setModuleVersionImage(@PathParam("id") String id,
                                       @PathParam("major") Integer major,
                                       @PathParam("minor") Integer minor,
                                       @PathParam("revision") Integer revision, byte[] data) {
@@ -279,7 +291,7 @@ public class StoreAdminImpl implements RSStoreAdmin {
     @DELETE
     @Path("/module/{id}/{major}/{minor}/{revision}/image")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public void removeModuleVersionImage(@PathParam("id") Long id,
+    public void removeModuleVersionImage(@PathParam("id") String id,
                                          @PathParam("major") Integer major,
                                          @PathParam("minor") Integer minor,
                                          @PathParam("revision") Integer revision) {
@@ -290,30 +302,29 @@ public class StoreAdminImpl implements RSStoreAdmin {
     @Override
     @DELETE
     @Path("/category/{id}")
-    public void removeCategory(@PathParam("id") Long id) {
+    public void removeCategory(@PathParam("id") String id) {
         storeAdmin.removeCategory(id);
     }
 
 
     @POST
-    @Path("/category")
+    @Path("/category/{id}")
     @Consumes(MediaType.APPLICATION_XML)
-    @Produces(MediaType.TEXT_PLAIN)
-    public Long setCategory(Category category) {
-        return storeAdmin.setCategory(category);
+    public void setCategory(@PathParam("id") String id, CategoryMeta category) {
+        storeAdmin.setCategory(id, category);
     }
 
     @Override
     @POST
     @Path("/category/{categoryId}/module/{moduleId}")
-    public void addModuleToCategory(@PathParam("categoryId") Long categoryId, @PathParam("moduleId") Long moduleId) {
+    public void addModuleToCategory(@PathParam("categoryId") String categoryId, @PathParam("moduleId") String moduleId) {
         storeAdmin.addModuleToCategory(categoryId, moduleId);
     }
 
     @Override
     @DELETE
     @Path("/category/{categoryId}/module/{moduleId}")
-    public void removeModuleFromCategory(@PathParam("categoryId") Long categoryId, @PathParam("moduleId") Long moduleId) {
+    public void removeModuleFromCategory(@PathParam("categoryId") String categoryId, @PathParam("moduleId") String moduleId) {
         storeAdmin.removeModuleFromCategory(categoryId, moduleId);
     }
 
@@ -323,11 +334,7 @@ public class StoreAdminImpl implements RSStoreAdmin {
     }
 
     @Override
-    public Map getRepositoryEntries(Long moduleId, Integer major, Integer minor, Integer revision) {
+    public Map getRepositoryEntries(String moduleId, Integer major, Integer minor, Integer revision) {
         return null;
-    }
-
-    @Override
-    public void removeModule(Long id) {
     }
 }

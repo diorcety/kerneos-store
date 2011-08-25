@@ -23,10 +23,10 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.web.impl.readers;
+package org.ow2.kerneosstore.web.impl.provider;
 
-import org.ow2.kerneosstore.api.Store;
-import org.ow2.kerneosstore.web.StoreElement;
+import org.ow2.kerneosstore.api.ModuleMeta;
+import org.ow2.kerneosstore.web.ModuleElement;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
@@ -36,7 +36,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -44,18 +43,18 @@ import java.lang.reflect.Type;
 
 @Consumes(MediaType.APPLICATION_XML)
 @Provider
-public class StoreReader implements MessageBodyReader<Store> {
+public class ModuleReader implements MessageBodyReader<ModuleMeta> {
     @Context
-    Providers providers;
+    private Providers providers;
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return Store.class.equals(type);
+        return ModuleMeta.class.equals(type);
     }
 
     @Override
-    public Store readFrom(Class<Store> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
-        MessageBodyReader<StoreElement> reader = providers.getMessageBodyReader(StoreElement.class, genericType, annotations, mediaType);
-        return reader.readFrom(StoreElement.class, genericType, annotations, mediaType, httpHeaders, entityStream);
+    public ModuleMeta readFrom(Class<ModuleMeta> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+        MessageBodyReader<ModuleElement> reader = providers.getMessageBodyReader(ModuleElement.class, genericType, annotations, mediaType);
+        return reader.readFrom(ModuleElement.class, genericType, annotations, mediaType, httpHeaders, entityStream);
     }
 }

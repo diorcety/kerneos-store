@@ -25,7 +25,12 @@
 
 package org.ow2.kerneosstore.api;
 
-public interface Repository extends RepositoryMeta {
+import java.util.Map;
 
-    public Long getId();
+public interface RepositoryMeta {
+    public String getName();
+
+    public String getType();
+
+    public Map<String, String> getProperties();
 }

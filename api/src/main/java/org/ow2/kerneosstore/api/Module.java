@@ -29,9 +29,9 @@ import java.util.Collection;
 
 public interface Module {
 
-    public Long getId();
+    public String getId();
 
-    public Collection<ModuleVersion> getVersions();
+    public Collection<? extends ModuleVersion> getVersions();
 
-    public Collection<Category> getCategories();
+    public Collection<? extends Category> getCategories();
 }

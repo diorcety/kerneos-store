@@ -23,9 +23,35 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.api;
+package org.ow2.kerneosstore.core;
 
-public interface Repository extends RepositoryMeta {
+import org.ow2.kerneosstore.api.CategoryMeta;
 
-    public Long getId();
+import javax.persistence.Basic;
+import javax.persistence.MappedSuperclass;
+
+@MappedSuperclass
+public class CategoryMetaBean implements CategoryMeta {
+
+    @Basic(optional = false)
+    private String name;
+
+    @Basic(optional = true)
+    private String description;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

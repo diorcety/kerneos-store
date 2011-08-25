@@ -36,55 +36,55 @@ public interface StoreAdmin {
 
     // Module
 
-    public Collection<ModuleVersion> getModules(Long id);
+    public Collection<? extends ModuleVersion> getModules(String id);
 
-    public void removeModule(Long id);
+    public void removeModule(String id);
 
     // ModuleVersion
 
-    public void enableModuleVersion(Long id, Integer major, Integer minor, Integer revision);
+    public void enableModuleVersion(String id, Integer major, Integer minor, Integer revision);
 
-    public void disableModuleVersion(Long id, Integer major, Integer minor, Integer revision);
+    public void disableModuleVersion(String id, Integer major, Integer minor, Integer revision);
 
-    public byte[] getModuleVersionImage(Long id, Integer major, Integer minor, Integer revision);
+    public byte[] getModuleVersionImage(String id, Integer major, Integer minor, Integer revision);
 
-    public void setModuleVersionImage(Long id, Integer major, Integer minor, Integer revision, byte[] data);
+    public void setModuleVersionImage(String id, Integer major, Integer minor, Integer revision, byte[] data);
 
-    public void removeModuleVersionImage(Long id, Integer major, Integer minor, Integer revision);
+    public void removeModuleVersionImage(String id, Integer major, Integer minor, Integer revision);
 
-    public ModuleVersion getModuleVersion(Long id, Integer major, Integer minor, Integer revision);
+    public ModuleVersion getModuleVersion(String id, Integer major, Integer minor, Integer revision);
 
-    public Long setModuleVersion(ModuleVersion moduleVersion);
+    public void setModuleVersion(String id, Integer major, Integer minor, Integer revision, ModuleMeta moduleVersion);
 
-    public void removeModuleVersion(Long id, Integer major, Integer minor, Integer revision);
+    public void removeModuleVersion(String id, Integer major, Integer minor, Integer revision);
 
     // RepositoryEntry
 
-    public Map<Repository, String> getRepositoryEntries(Long moduleId, Integer major, Integer minor, Integer revision);
+    public Map<Repository, String> getRepositoryEntries(String moduleId, Integer major, Integer minor, Integer revision);
 
-    public void setRepositoryEntry(Long repositoryId, Long id, Integer major, Integer minor, Integer revision, String key);
+    public void setRepositoryEntry(Long repositoryId, String id, Integer major, Integer minor, Integer revision, String key);
 
-    public void removeRepositoryEntry(Long repositoryId, Long moduleId, Integer major, Integer minor, Integer revision);
+    public void removeRepositoryEntry(Long repositoryId, String moduleId, Integer major, Integer minor, Integer revision);
 
     // Repository
 
-    public Collection<Repository> getRepositoriesByType(String type);
+    public Collection<? extends Repository> getRepositoriesByType(String type);
 
     public Repository getRepository(Long id);
 
-    public Long setRepository(Repository repository);
+    public void setRepository(Long id, RepositoryMeta repository);
 
     public void removeRepository(Long id);
 
 
     // Category
 
-    public Long setCategory(Category category);
+    public void setCategory(String id, CategoryMeta category);
 
-    public void removeCategory(Long id);
+    public void removeCategory(String id);
 
-    public void addModuleToCategory(Long categoryId, Long moduleId);
+    public void addModuleToCategory(String categoryId, String moduleId);
 
-    public void removeModuleFromCategory(Long categoryId, Long moduleId);
+    public void removeModuleFromCategory(String categoryId, String moduleId);
 
 }

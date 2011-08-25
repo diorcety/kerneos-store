@@ -23,12 +23,9 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.web.impl.readers;
+package org.ow2.kerneosstore.web.impl.provider;
 
-import org.ow2.kerneosstore.api.Category;
-import org.ow2.kerneosstore.api.ModuleVersion;
-import org.ow2.kerneosstore.api.Repository;
-import org.ow2.kerneosstore.web.ModuleElement;
+import org.ow2.kerneosstore.api.RepositoryMeta;
 import org.ow2.kerneosstore.web.RepositoryElement;
 
 import javax.ws.rs.Consumes;
@@ -46,17 +43,17 @@ import java.lang.reflect.Type;
 
 @Consumes(MediaType.APPLICATION_XML)
 @Provider
-public class RepositoryReader implements MessageBodyReader<Repository> {
+public class RepositoryReader implements MessageBodyReader<RepositoryMeta> {
     @Context
-    Providers providers;
+    private Providers providers;
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return Repository.class.equals(type);
+        return RepositoryMeta.class.equals(type);
     }
 
     @Override
-    public Repository readFrom(Class<Repository> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+    public RepositoryMeta readFrom(Class<RepositoryMeta> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
         MessageBodyReader<RepositoryElement> reader = providers.getMessageBodyReader(RepositoryElement.class, genericType, annotations, mediaType);
         return reader.readFrom(RepositoryElement.class, genericType, annotations, mediaType, httpHeaders, entityStream);
     }

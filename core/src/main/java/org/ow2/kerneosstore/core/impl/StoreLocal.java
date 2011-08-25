@@ -25,9 +25,11 @@
 
 package org.ow2.kerneosstore.core.impl;
 
-import org.ow2.kerneosstore.api.Category;
+import org.ow2.kerneosstore.api.CategoryMeta;
+import org.ow2.kerneosstore.api.ModuleMeta;
 import org.ow2.kerneosstore.api.ModuleVersion;
 import org.ow2.kerneosstore.api.Repository;
+import org.ow2.kerneosstore.api.RepositoryMeta;
 import org.ow2.kerneosstore.api.Store;
 import org.ow2.kerneosstore.core.CategoryBean;
 import org.ow2.kerneosstore.core.EJBStoreAdmin;
@@ -44,6 +46,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -85,7 +88,7 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
     /// Module
     ///////////////////////////////////////////////////////////////////////////
 
-    public ModuleBean getModule(Long id) {
+    public ModuleBean getModule(String id) {
         String strQuery = "SELECT x FROM Module x WHERE x.id = :id";
 
         // Create the query
@@ -102,7 +105,7 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
     }
 
     @Override
-    public Collection<ModuleVersion> getModules(Long id) {
+    public Collection<ModuleVersionBean> getModules(String id) {
         String strQuery = "SELECT x FROM Module x WHERE x.id = :id";
 
         // Create the query
@@ -113,11 +116,11 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
 
         // Force EAGER
         module.getVersions().size();
-        return module.getVersions();
+        return (Collection<ModuleVersionBean>) module.getVersions();
     }
 
     @Override
-    public void removeModule(Long id) {
+    public void removeModule(String id) {
         ModuleBean module = entityManager.find(ModuleBean.class, id);
         entityManager.remove(module);
     }
@@ -128,48 +131,48 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
     ///////////////////////////////////////////////////////////////////////////
 
     @Override
-    public void enableModuleVersion(Long id, Integer major, Integer minor, Integer revision) {
+    public void enableModuleVersion(String id, Integer major, Integer minor, Integer revision) {
         ModuleVersionBean moduleVersion = getModuleVersion(id, major, minor, revision);
         moduleVersion.setAvailable(true);
     }
 
     @Override
-    public void disableModuleVersion(Long id, Integer major, Integer minor, Integer revision) {
+    public void disableModuleVersion(String id, Integer major, Integer minor, Integer revision) {
         ModuleVersionBean moduleVersion = getModuleVersion(id, major, minor, revision);
         moduleVersion.setAvailable(false);
     }
 
     @Override
-    public byte[] getModuleVersionImage(Long id) {
+    public byte[] getModuleVersionImage(String id) {
         return getModuleVersionImage(id, null, null, null);
     }
 
     @Override
-    public byte[] getModuleVersionImage(Long id, Integer major, Integer minor, Integer revision) {
+    public byte[] getModuleVersionImage(String id, Integer major, Integer minor, Integer revision) {
         return getModuleVersion(id, major, minor, revision).getImage();
     }
 
     @Override
-    public void setModuleVersionImage(Long id, Integer major, Integer minor, Integer revision, byte[] data) {
+    public void setModuleVersionImage(String id, Integer major, Integer minor, Integer revision, byte[] data) {
         ModuleVersionBean moduleVersion = getModuleVersion(id, major, minor, revision);
         moduleVersion.setImage(data);
     }
 
     @Override
-    public void removeModuleVersionImage(Long id, Integer major, Integer minor, Integer revision) {
+    public void removeModuleVersionImage(String id, Integer major, Integer minor, Integer revision) {
         ModuleVersionBean moduleVersion = getModuleVersion(id, major, minor, revision);
         byte[] data = moduleVersion.getImage();
         moduleVersion.setImage(null);
     }
 
     @Override
-    public ModuleVersionBean getModuleVersion(Long id) {
+    public ModuleVersionBean getModuleVersion(String id) {
         return getModuleVersion(id, null, null, null);
     }
 
 
     @Override
-    public ModuleVersionBean getModuleVersion(Long id, Integer major, Integer minor, Integer revision) {
+    public ModuleVersionBean getModuleVersion(String id, Integer major, Integer minor, Integer revision) {
         String strQuery = "SELECT x FROM ModuleVersion x WHERE x.module.id = :id";
         if (major != null && minor != null && revision != null)
             strQuery += " AND x.major = :major AND x.minor = :minor AND x.revision = :revision";
@@ -190,17 +193,18 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
     }
 
     @Override
-    public Long setModuleVersion(ModuleVersion moduleVersion) {
+    public void setModuleVersion(String id, Integer major, Integer minor, Integer revision, ModuleMeta moduleMeta) {
         ModuleVersionBean moduleVersionBean;
+        ModuleBean moduleBean = entityManager.find(ModuleBean.class, id);
 
         // Get or Create the entity
-        if (moduleVersion.getModule().getId() != null) {
+        if (moduleBean != null) {
             // Create the PK
             ModuleVersionPK pk = new ModuleVersionPK();
-            pk.setModule(getModule(moduleVersion.getModule().getId()));
-            pk.setMajor(moduleVersion.getMajor());
-            pk.setMinor(moduleVersion.getMinor());
-            pk.setRevision(moduleVersion.getRevision());
+            pk.setModule(moduleBean);
+            pk.setMajor(major);
+            pk.setMinor(minor);
+            pk.setRevision(revision);
 
             moduleVersionBean = entityManager.find(ModuleVersionBean.class, pk);
             if (moduleVersionBean == null) {
@@ -211,27 +215,28 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
                 moduleVersionBean.setRevision(pk.getRevision());
             }
         } else {
-            ModuleBean module = new ModuleBean();
-            entityManager.persist(module);
+            moduleBean = new ModuleBean();
+            moduleBean.setId(id);
+            entityManager.persist(moduleBean);
 
             moduleVersionBean = new ModuleVersionBean();
-            moduleVersionBean.setModule(module);
-            moduleVersionBean.setMajor(moduleVersion.getMajor());
-            moduleVersionBean.setMinor(moduleVersion.getMinor());
-            moduleVersionBean.setRevision(moduleVersion.getRevision());
+            moduleVersionBean.setModule(moduleBean);
+            moduleVersionBean.setMajor(major);
+            moduleVersionBean.setMinor(minor);
+            moduleVersionBean.setRevision(revision);
         }
 
-        moduleVersionBean.setAuthor(moduleVersion.getAuthor());
-        moduleVersionBean.setDate(moduleVersion.getDate());
-        moduleVersionBean.setDescription(moduleVersion.getDescription());
-        moduleVersionBean.setName(moduleVersion.getName());
-        moduleVersionBean.setUrl(moduleVersion.getUrl());
+        moduleVersionBean.setAuthor(moduleMeta.getAuthor());
+        moduleVersionBean.setDate(moduleMeta.getDate());
+        moduleVersionBean.setDescription(moduleMeta.getDescription());
+        moduleVersionBean.setName(moduleMeta.getName());
+        moduleVersionBean.setUrl(moduleMeta.getUrl());
 
-        return entityManager.merge(moduleVersionBean).getModule().getId();
+        entityManager.merge(moduleVersionBean);
     }
 
     @Override
-    public void removeModuleVersion(Long id, Integer major, Integer minor, Integer revision) {
+    public void removeModuleVersion(String id, Integer major, Integer minor, Integer revision) {
         ModuleVersionPK pk = new ModuleVersionPK();
         pk.setModule(entityManager.find(ModuleBean.class, id));
         pk.setMajor(major);
@@ -243,19 +248,61 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
     }
 
     @Override
-    public Collection getModulesByName(String filter, String order, Integer itemByPage, Integer page) {
-        String strQuery = "SELECT x FROM ModuleVersion x";
-        if (filter != null) {
-            strQuery += " WHERE x.name LIKE %:filter%";
-        }
-        if (order != null) {
-            strQuery += " ORDER BY x.name";
+    public Collection<ModuleVersionBean> searchModules(String filter, String field, String order, Integer itemByPage, Integer page) {
+        boolean strictFilter = false;
+        String strQuery = "SELECT x FROM ModuleVersion x WHERE x.available = true AND (" +
+                "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major > x.major) = 0 AND (" +
+                "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major = x.major AND z.minor > x.minor) = 0 AND (" +
+                "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major = x.major AND z.minor = x.minor AND z.revision > x.revision ) = 0 AND";
+
+        if ("author".equalsIgnoreCase(field)) {
+
+            // Author
+            strQuery += " LOWER(x.author) LIKE :filter";
+            if (order != null) {
+                if ("desc".equals(order))
+                    strQuery += " ORDER BY x.author DESC";
+                else
+                    strQuery += " ORDER BY x.author ASC";
+            }
+        } else if ("description".equalsIgnoreCase(field)) {
+
+            // Description
+            strQuery += " LOWER(x.description) LIKE :filter";
+            if (order != null) {
+                if ("desc".equals(order))
+                    strQuery += " ORDER BY x.description DESC";
+                else
+                    strQuery += " ORDER BY x.description ASC";
+            }
+        } else if ("category".equalsIgnoreCase(field)) {
+
+            // Category
+            strQuery += " (SELECT count(*) FROM Category a, IN(a.modules) b WHERE LOWER(a.name) LIKE :filter AND b.id = x.module.id) > 0";
+        } else if ("categoryId".equalsIgnoreCase(field)) {
+
+            // Category's Id
+            strictFilter = true;
+            strQuery += " (SELECT count(*) FROM Category a, IN(a.modules) b WHERE LOWER(a.id) LIKE :filter AND b.id = x.module.id) > 0";
+        } else {
+
+            // Name (default)
+            strQuery += " LOWER(x.name) LIKE :filter";
+            if (order != null) {
+                if ("desc".equals(order))
+                    strQuery += " ORDER BY x.name DESC";
+                else
+                    strQuery += " ORDER BY x.name ASC";
+            }
         }
 
         // Create the query
         Query q = entityManager.createQuery(strQuery);
         if (filter != null)
-            q.setParameter("filter", filter);
+            if (strictFilter)
+                q.setParameter("filter", filter.toLowerCase());
+            else
+                q.setParameter("filter", "%" + filter.toLowerCase() + "%");
         if (itemByPage != null) {
             q.setMaxResults(itemByPage);
             if (page != null) {
@@ -263,7 +310,7 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
             }
         }
 
-        return q.getResultList();
+        return (Collection<ModuleVersionBean>) q.getResultList();
     }
 
 
@@ -272,11 +319,11 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
     ///////////////////////////////////////////////////////////////////////////
 
 
-    public Map getRepositoryEntries(Long moduleId) {
+    public Map getRepositoryEntries(String moduleId) {
         return getRepositoryEntries(moduleId, null, null, null);
     }
 
-    public Map getRepositoryEntries(Long moduleId, Integer major, Integer minor, Integer revision) {
+    public Map getRepositoryEntries(String moduleId, Integer major, Integer minor, Integer revision) {
         Map map = new HashMap();
 
         for (RepositoryEntityBean entityBean : getModuleVersion(moduleId, major, minor, revision).getRepositoryEntities()) {
@@ -286,7 +333,7 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
         return map;
     }
 
-    public void setRepositoryEntry(Long repositoryId, Long id, Integer major, Integer minor, Integer revision, String key) {
+    public void setRepositoryEntry(Long repositoryId, String id, Integer major, Integer minor, Integer revision, String key) {
         RepositoryEntityBean repositoryEntityBean;
 
         // Create the PK
@@ -308,7 +355,7 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
         entityManager.merge(repositoryEntityBean);
     }
 
-    public void removeRepositoryEntry(Long repositoryId, Long moduleId, Integer major, Integer minor, Integer revision) {
+    public void removeRepositoryEntry(Long repositoryId, String moduleId, Integer major, Integer minor, Integer revision) {
         RepositoryEntityPK pk = new RepositoryEntityPK();
         pk.setModuleVersion(getModuleVersion(moduleId, major, minor, revision));
         pk.setRepository(getRepository(repositoryId));
@@ -322,7 +369,7 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
     ///////////////////////////////////////////////////////////////////////////
 
     @Override
-    public Collection getRepositoriesByType(String type) {
+    public Collection<RepositoryBean> getRepositoriesByType(String type) {
         String strQuery = "SELECT x FROM Repository x WHERE x.type = :type";
 
         // Create the query
@@ -344,21 +391,21 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
     }
 
     @Override
-    public Long setRepository(Repository repository) {
-        RepositoryBean repositoryBean;
+    public void setRepository(Long id, RepositoryMeta repositoryMeta) {
+        RepositoryBean repositoryBean = entityManager.find(RepositoryBean.class, id);
 
         // Get or Create the entity
-        if (repository.getId() != null)
-            repositoryBean = getRepository(repository.getId());
-        else
+        if (repositoryBean == null) {
             repositoryBean = new RepositoryBean();
+            repositoryBean.setId(id);
+        }
 
         // Set the fields
-        repositoryBean.setName(repository.getName());
-        repositoryBean.setType(repository.getType());
-        repositoryBean.setProperties(repository.getProperties());
+        repositoryBean.setName(repositoryMeta.getName());
+        repositoryBean.setType(repositoryMeta.getType());
+        repositoryBean.setProperties(repositoryMeta.getProperties());
 
-        return entityManager.merge(repositoryBean).getId();
+        entityManager.merge(repositoryBean);
     }
 
 
@@ -374,7 +421,7 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
 
 
     @Override
-    public CategoryBean getCategory(Long id) {
+    public CategoryBean getCategory(String id) {
         String strQuery = "SELECT x FROM Category x WHERE x.id = :id";
 
         // Create the query
@@ -385,7 +432,7 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
     }
 
     @Override
-    public Collection getCategories() {
+    public Collection<CategoryBean> getCategories() {
         String strQuery = "SELECT x FROM Category x";
 
         // Create the query
@@ -395,24 +442,22 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
     }
 
     @Override
-    public Long setCategory(Category category) {
-        CategoryBean categoryBean;
+    public void setCategory(String id, CategoryMeta categoryMeta) {
+        CategoryBean categoryBean = entityManager.find(CategoryBean.class, id);
 
         // Get or Create the entity
-        if (category.getId() != null)
-            categoryBean = getCategory(category.getId());
-        else
+        if (categoryBean == null) {
             categoryBean = new CategoryBean();
+            categoryBean.setId(id);
+        }
 
-        categoryBean.setName(category.getName());
-        categoryBean.setDescription(category.getDescription());
-        entityManager.persist(categoryBean);
-
-        return categoryBean.getId();
+        categoryBean.setName(categoryMeta.getName());
+        categoryBean.setDescription(categoryMeta.getDescription());
+        entityManager.merge(categoryBean);
     }
 
     @Override
-    public void removeCategory(Long id) {
+    public void removeCategory(String id) {
         CategoryBean category = entityManager.find(CategoryBean.class, id);
         for (Iterator<ModuleBean> moduleIt = category.getModules().iterator(); moduleIt.hasNext(); ) {
             ModuleBean module = moduleIt.next();
@@ -423,20 +468,24 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
     }
 
     @Override
-    public void addModuleToCategory(Long categoryId, Long moduleId) {
+    public void addModuleToCategory(String categoryId, String moduleId) {
         CategoryBean category = getCategory(categoryId);
         ModuleBean module = getModule(moduleId);
 
-        category.getModules().add(module);
-        module.getCategories().add(category);
+        if (!category.getModules().contains(module)) {
+            category.getModules().add(module);
+            module.getCategories().add(category);
+        }
     }
 
     @Override
-    public void removeModuleFromCategory(Long categoryId, Long moduleId) {
+    public void removeModuleFromCategory(String categoryId, String moduleId) {
         CategoryBean category = getCategory(categoryId);
         ModuleBean module = getModule(moduleId);
 
-        category.getModules().remove(module);
-        module.getCategories().remove(category);
+        if (category.getModules().contains(module)) {
+            category.getModules().remove(module);
+            module.getCategories().remove(category);
+        }
     }
 }

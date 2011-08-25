@@ -38,45 +38,22 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 @Entity(name = "Category")
-public class CategoryBean implements Category {
+public class CategoryBean extends CategoryMetaBean implements Category {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Basic(optional = false)
-    private String name;
-
-    @Basic(optional = true)
-    private String description;
+    private String id;
 
     @ManyToMany
     private Collection<ModuleBean> modules;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Collection getModules() {
+    public Collection<ModuleBean> getModules() {
         return modules;
     }
 

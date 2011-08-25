@@ -23,9 +23,9 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.web.impl.readers;
+package org.ow2.kerneosstore.web.impl.provider;
 
-import org.ow2.kerneosstore.api.Category;
+import org.ow2.kerneosstore.api.CategoryMeta;
 import org.ow2.kerneosstore.web.CategoryElement;
 
 import javax.ws.rs.Consumes;
@@ -43,17 +43,17 @@ import java.lang.reflect.Type;
 
 @Consumes(MediaType.APPLICATION_XML)
 @Provider
-public class CategoryReader implements MessageBodyReader<Category> {
+public class CategoryReader implements MessageBodyReader<CategoryMeta> {
     @Context
-    Providers providers;
+    private Providers providers;
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return Category.class.equals(type);
+        return CategoryMeta.class.equals(type);
     }
 
     @Override
-    public Category readFrom(Class<Category> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+    public CategoryMeta readFrom(Class<CategoryMeta> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
         MessageBodyReader<CategoryElement> reader = providers.getMessageBodyReader(CategoryElement.class, genericType, annotations, mediaType);
         return reader.readFrom(CategoryElement.class, genericType, annotations, mediaType, httpHeaders, entityStream);
     }

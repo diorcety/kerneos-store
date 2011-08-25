@@ -148,14 +148,15 @@ public class StoreClientImpl implements RSStoreClient {
 
     @Override
     @GET
-    @Path("/modules/name/{filter}")
+    @Path("/modules/{filter}")
     @Produces(MediaType.APPLICATION_XML)
-    public Collection getModulesByName(
+    public Collection<ModuleElement> searchModules(
             @PathParam("filter") String filter,
+            @QueryParam("field") String field,
             @QueryParam("order") String order,
             @QueryParam("itemByPage") Integer itemByPage,
             @QueryParam("page") Integer page) {
-        Collection modules = storeClient.getModulesByName(filter, order, itemByPage, page);
+        Collection modules = storeClient.searchModules(filter, field, order, itemByPage, page);
 
         List<ModuleElement> moduleList = new LinkedList<ModuleElement>();
         if (modules != null) {
@@ -173,14 +174,14 @@ public class StoreClientImpl implements RSStoreClient {
     @GET
     @Path("/module/{id}")
     @Produces(MediaType.APPLICATION_XML)
-    public ModuleElement getModuleVersion(@PathParam("id") Long id) {
+    public ModuleElement getModuleVersion(@PathParam("id") String id) {
         return new ModuleElement(storeClient.getModuleVersion(id));
     }
 
     @GET
     @Path("/module/{id}/download")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public byte[] downloadModule(@PathParam("id") Long id) {
+    public byte[] downloadModule(@PathParam("id") String id) {
         byte[] data = null;
         for (Map.Entry<Repository, String> entry : storeClient.getRepositoryEntries(id).entrySet()) {
             org.ow2.kerneosstore.repository.Repository repo;
@@ -206,7 +207,7 @@ public class StoreClientImpl implements RSStoreClient {
     @GET
     @Path("/module/{id}/image")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public byte[] getModuleVersionImage(@PathParam("id") Long id) {
+    public byte[] getModuleVersionImage(@PathParam("id") String id) {
         return storeClient.getModuleVersionImage(id);
     }
 
@@ -215,7 +216,7 @@ public class StoreClientImpl implements RSStoreClient {
     @GET
     @Path("/categories")
     @Produces(MediaType.APPLICATION_XML)
-    public Collection getCategories() {
+    public Collection<CategoryElement> getCategories() {
         Collection<CategoryElement> categories = new LinkedList<CategoryElement>();
         for (Category category : storeClient.getCategories()) {
             categories.add(new CategoryElement(category));
@@ -227,18 +228,13 @@ public class StoreClientImpl implements RSStoreClient {
     @GET
     @Path("/category/{id}")
     @Produces(MediaType.APPLICATION_XML)
-    public CategoryElement getCategory(@PathParam("id") Long id) {
+    public CategoryElement getCategory(@PathParam("id") String id) {
         Category category = storeClient.getCategory(id);
-        CategoryElement categoryElement = new CategoryElement();
-        categoryElement.setId(category.getId());
-        categoryElement.setName(category.getName());
-        categoryElement.setDescription(category.getDescription());
-
-        return categoryElement;
+        return new CategoryElement(category);
     }
 
     @Override
-    public Map getRepositoryEntries(Long moduleId) {
+    public Map getRepositoryEntries(String moduleId) {
         return null;
     }
 }

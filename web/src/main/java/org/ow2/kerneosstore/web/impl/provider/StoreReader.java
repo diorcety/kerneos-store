@@ -23,34 +23,39 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.web.impl.writers;
+package org.ow2.kerneosstore.web.impl.provider;
 
-import javax.ws.rs.Produces;
+import org.ow2.kerneosstore.api.Store;
+import org.ow2.kerneosstore.web.StoreElement;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.Providers;
+
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-@Produces(MediaType.TEXT_PLAIN)
+@Consumes(MediaType.APPLICATION_XML)
 @Provider
-public class LongWriter implements MessageBodyWriter<Long> {
+public class StoreReader implements MessageBodyReader<Store> {
+    @Context
+    private Providers providers;
+
     @Override
-    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return Long.class.isAssignableFrom(type);
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        return Store.class.equals(type);
     }
 
     @Override
-    public long getSize(Long aLong, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return -1;
-    }
-
-    @Override
-    public void writeTo(Long aLong, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
-        entityStream.write(aLong.toString().getBytes());
+    public Store readFrom(Class<Store> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+        MessageBodyReader<StoreElement> reader = providers.getMessageBodyReader(StoreElement.class, genericType, annotations, mediaType);
+        return reader.readFrom(StoreElement.class, genericType, annotations, mediaType, httpHeaders, entityStream);
     }
 }

@@ -149,7 +149,7 @@
             </Export-Package>
             <Private-Package>
               org.ow2.kerneosstore.web.impl,
-              org.ow2.kerneosstore.web.impl.readers,
+              org.ow2.kerneosstore.web.impl.provider,
               org.ow2.kerneosstore.web.impl.writers
             </Private-Package>
           </instructions>

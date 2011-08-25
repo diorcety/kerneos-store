@@ -25,7 +25,8 @@
 
 package org.ow2.kerneosstore.api;
 
-public interface Repository extends RepositoryMeta {
+public interface CategoryMeta {
+    public String getName();
 
-    public Long getId();
+    public String getDescription();
 }

@@ -39,11 +39,11 @@ import org.osgi.service.http.NamespaceException;
 
 import org.ow2.kerneosstore.web.RSStoreAdmin;
 import org.ow2.kerneosstore.web.RSStoreClient;
-import org.ow2.kerneosstore.web.impl.readers.CategoryReader;
-import org.ow2.kerneosstore.web.impl.readers.ModuleReader;
-import org.ow2.kerneosstore.web.impl.readers.RepositoryReader;
-import org.ow2.kerneosstore.web.impl.writers.LongWriter;
-import org.ow2.kerneosstore.web.impl.readers.StoreReader;
+import org.ow2.kerneosstore.web.impl.provider.CategoryReader;
+import org.ow2.kerneosstore.web.impl.provider.ModuleReader;
+import org.ow2.kerneosstore.web.impl.provider.MyXMLListElementProvider;
+import org.ow2.kerneosstore.web.impl.provider.RepositoryReader;
+import org.ow2.kerneosstore.web.impl.provider.StoreReader;
 import org.ow2.util.log.Log;
 import org.ow2.util.log.LogFactory;
 
@@ -102,8 +102,8 @@ public class StoreImpl extends Application {
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> objects = new HashSet<Class<?>>();
+        objects.add(MyXMLListElementProvider.class);
         objects.add(EJBExceptionMapper.class);
-        objects.add(LongWriter.class);
         objects.add(CategoryReader.class);
         objects.add(ModuleReader.class);
         objects.add(RepositoryReader.class);

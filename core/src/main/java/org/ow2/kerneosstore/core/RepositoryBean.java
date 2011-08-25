@@ -41,19 +41,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity(name = "Repository")
-public class RepositoryBean implements Repository {
+public class RepositoryBean extends RepositoryMetaBean implements Repository {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Basic(optional = false)
-    private String name;
-
-    @Basic(optional = false)
-    private String type;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Map<String, String> properties;
 
     @OneToMany(mappedBy = "repository", cascade = CascadeType.REMOVE)
     private Collection<RepositoryEntityBean> repositoryEntities;
@@ -64,32 +55,6 @@ public class RepositoryBean implements Repository {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Map<String, String> getProperties() {
-        if (properties == null)
-            properties = new HashMap<String, String>();
-        return properties;
-    }
-
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
     }
 
     public Collection getRepositoryEntities() {

@@ -23,41 +23,29 @@
  * --------------------------------------------------------------------------
  */
 
-package org.ow2.kerneosstore.web;
+package org.ow2.kerneosstore.core;
 
-import org.ow2.kerneosstore.api.Category;
-import org.ow2.kerneosstore.api.Module;
+import org.ow2.kerneosstore.api.RepositoryMeta;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.persistence.Basic;
+import javax.persistence.ElementCollection;
+import javax.persistence.FetchType;
+import javax.persistence.MappedSuperclass;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.util.Collection;
+@MappedSuperclass
+public class RepositoryMetaBean implements RepositoryMeta {
 
-@XmlRootElement(name = "category")
-@XmlAccessorType(XmlAccessType.FIELD)
-public class CategoryElement implements Category {
-    private String id;
+    @Basic(optional = false)
     private String name;
-    private String description;
 
-    public CategoryElement() {
+    @Basic(optional = false)
+    private String type;
 
-    }
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Map<String, String> properties;
 
-    public CategoryElement(Category category) {
-        id = category.getId();
-        name = category.getName();
-        description = category.getDescription();
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -67,16 +55,21 @@ public class CategoryElement implements Category {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    public String getType() {
+        return type;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    @Override
-    public Collection<Module> getModules() {
-        return null;
+    public Map<String, String> getProperties() {
+        if (properties == null)
+            properties = new HashMap<String, String>();
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
     }
 }

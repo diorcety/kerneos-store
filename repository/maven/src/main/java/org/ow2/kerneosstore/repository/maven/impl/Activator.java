@@ -124,7 +124,7 @@ public class Activator {
             }
         }
 
-        private boolean contains(Collection<Repository> repositories, Repository repository) {
+        private boolean contains(Collection<? extends Repository> repositories, Repository repository) {
             // Check repository modification
             for (Repository rep : repositories) {
                 if (rep.getId().equals(repository.getId()) &&
@@ -141,7 +141,7 @@ public class Activator {
         public void run() {
             try {
                 do {
-                    Collection<Repository> mavenRepositories = store.getRepositoriesByType(Maven.COMPONENT_NAME);
+                    Collection<? extends Repository> mavenRepositories = store.getRepositoriesByType(Maven.COMPONENT_NAME);
 
                     // Remove old repositories
                     for (Iterator<Repository> repositoryIt = configurationMap.keySet().iterator(); repositoryIt.hasNext(); ) {

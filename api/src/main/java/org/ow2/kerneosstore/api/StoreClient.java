@@ -36,20 +36,20 @@ public interface StoreClient {
 
     // RepositoryEntry
 
-    public Map<Repository, String> getRepositoryEntries(Long moduleId);
+    public Map<Repository, String> getRepositoryEntries(String moduleId);
 
     // ModuleVersion
 
-    public byte[] getModuleVersionImage(Long id);
+    public byte[] getModuleVersionImage(String id);
 
-    public ModuleVersion getModuleVersion(Long id);
+    public ModuleVersion getModuleVersion(String id);
 
-    public Collection<ModuleVersion> getModulesByName(String filter, String order, Integer itemByPage, Integer page);
+    public Collection<? extends ModuleVersion> searchModules(String filter, String field, String order, Integer itemByPage, Integer page);
 
     // Category
 
-    public Collection<Category> getCategories();
+    public Collection<? extends Category> getCategories();
 
-    public Category getCategory(Long id);
+    public Category getCategory(String id);
 
 }
