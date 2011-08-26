@@ -275,15 +275,6 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
                 else
                     strQuery += " ORDER BY x.description ASC";
             }
-        } else if ("category".equalsIgnoreCase(field)) {
-
-            // Category
-            strQuery += " (SELECT count(*) FROM Category a, IN(a.modules) b WHERE LOWER(a.name) LIKE :filter AND b.id = x.module.id) > 0";
-        } else if ("categoryId".equalsIgnoreCase(field)) {
-
-            // Category's Id
-            strictFilter = true;
-            strQuery += " (SELECT count(*) FROM Category a, IN(a.modules) b WHERE LOWER(a.id) LIKE :filter AND b.id = x.module.id) > 0";
         } else {
 
             // Name (default)
@@ -487,5 +478,52 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
             category.getModules().remove(module);
             module.getCategories().remove(category);
         }
+    }
+
+    @Override
+    public Collection<? extends ModuleVersion> searchModulesByCategory(String id, String field, String order, Integer itemByPage, Integer page) {
+        String strQuery = "SELECT x FROM Category y, ModuleVersion x, IN(y.modules) z WHERE y.id=:id AND z.id = x.module.id AND x.available = true AND (" +
+                "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major > x.major) = 0 AND (" +
+                "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major = x.major AND z.minor > x.minor) = 0 AND (" +
+                "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major = x.major AND z.minor = x.minor AND z.revision > x.revision ) = 0";
+        if ("author".equalsIgnoreCase(field)) {
+
+            // Author
+            if (order != null) {
+                if ("desc".equals(order))
+                    strQuery += " ORDER BY x.author DESC";
+                else
+                    strQuery += " ORDER BY x.author ASC";
+            }
+        } else if ("description".equalsIgnoreCase(field)) {
+
+            // Description
+            if (order != null) {
+                if ("desc".equals(order))
+                    strQuery += " ORDER BY x.description DESC";
+                else
+                    strQuery += " ORDER BY x.description ASC";
+            }
+        } else {
+
+            // Name (default)
+            if (order != null) {
+                if ("desc".equals(order))
+                    strQuery += " ORDER BY x.name DESC";
+                else
+                    strQuery += " ORDER BY x.name ASC";
+            }
+        }
+        // Create the query
+        Query q = entityManager.createQuery(strQuery);
+        q.setParameter("id", id);
+        if (itemByPage != null) {
+            q.setMaxResults(itemByPage);
+            if (page != null) {
+                q.setFirstResult(itemByPage * page);
+            }
+        }
+
+        return (Collection<ModuleVersionBean>) q.getResultList();
     }
 }

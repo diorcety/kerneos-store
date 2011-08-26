@@ -46,6 +46,8 @@ public interface StoreClient {
 
     public Collection<? extends ModuleVersion> searchModules(String filter, String field, String order, Integer itemByPage, Integer page);
 
+    public Collection<? extends ModuleVersion> searchModulesByCategory(String id, String field, String order, Integer itemByPage, Integer page);
+
     // Category
 
     public Collection<? extends Category> getCategories();

@@ -156,12 +156,11 @@ public class StoreClientImpl implements RSStoreClient {
             @QueryParam("order") String order,
             @QueryParam("itemByPage") Integer itemByPage,
             @QueryParam("page") Integer page) {
-        Collection modules = storeClient.searchModules(filter, field, order, itemByPage, page);
+        Collection<? extends ModuleVersion> modules = storeClient.searchModules(filter, field, order, itemByPage, page);
 
         List<ModuleElement> moduleList = new LinkedList<ModuleElement>();
         if (modules != null) {
-            for (Iterator iterator = modules.iterator(); iterator.hasNext(); ) {
-                ModuleVersion moduleVersion = (ModuleVersion) iterator.next();
+            for (ModuleVersion moduleVersion : modules) {
                 moduleList.add(new ModuleElement(moduleVersion));
             }
 
@@ -231,6 +230,29 @@ public class StoreClientImpl implements RSStoreClient {
     public CategoryElement getCategory(@PathParam("id") String id) {
         Category category = storeClient.getCategory(id);
         return new CategoryElement(category);
+    }
+
+    @Override
+    @GET
+    @Path("/category/{id}/modules")
+    @Produces(MediaType.APPLICATION_XML)
+    public Collection<ModuleElement> searchModulesByCategory(
+            @PathParam("id") String categoryId,
+            @QueryParam("field") String field,
+            @QueryParam("order") String order,
+            @QueryParam("itemByPage") Integer itemByPage,
+            @QueryParam("page") Integer page) {
+        Collection<? extends ModuleVersion> modules = storeClient.searchModulesByCategory(categoryId, field, order, itemByPage, page);
+
+        List<ModuleElement> moduleList = new LinkedList<ModuleElement>();
+        if (modules != null) {
+            for (ModuleVersion moduleVersion : modules) {
+                moduleList.add(new ModuleElement(moduleVersion));
+            }
+
+        }
+
+        return moduleList;
     }
 
     @Override
