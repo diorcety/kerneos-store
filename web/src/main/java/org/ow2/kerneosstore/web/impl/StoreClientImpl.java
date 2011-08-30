@@ -177,6 +177,7 @@ public class StoreClientImpl implements RSStoreClient {
         return new ModuleElement(storeClient.getModuleVersion(id));
     }
 
+    @Override
     @GET
     @Path("/module/{id}/download")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)

@@ -27,13 +27,6 @@ package org.ow2.kerneosstore.web;
 
 import org.ow2.kerneosstore.api.StoreClient;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import java.util.Collection;
-
 public interface RSStoreClient extends StoreClient{
+    public byte[] downloadModule(String id);
 }
