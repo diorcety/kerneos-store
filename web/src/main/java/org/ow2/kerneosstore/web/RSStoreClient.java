@@ -27,6 +27,6 @@ package org.ow2.kerneosstore.web;
 
 import org.ow2.kerneosstore.api.StoreClient;
 
-public interface RSStoreClient extends StoreClient{
-    public byte[] downloadModule(String id);
+public interface RSStoreClient extends StoreClient {
+    public byte[] downloadModuleVersion(String id);
 }

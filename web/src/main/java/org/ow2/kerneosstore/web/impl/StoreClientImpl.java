@@ -181,7 +181,7 @@ public class StoreClientImpl implements RSStoreClient {
     @GET
     @Path("/module/{id}/download")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public byte[] downloadModule(@PathParam("id") String id) {
+    public byte[] downloadModuleVersion(@PathParam("id") String id) {
         byte[] data = null;
         for (Map.Entry<Repository, String> entry : storeClient.getRepositoryEntries(id).entrySet()) {
             org.ow2.kerneosstore.repository.Repository repo;
