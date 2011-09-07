@@ -482,6 +482,7 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
 
     @Override
     public Collection<? extends ModuleVersion> searchModulesByCategory(String id, String field, String order, Integer itemByPage, Integer page) {
+        //TODO id to lower case
         String strQuery = "SELECT x FROM Category y, ModuleVersion x, IN(y.modules) z WHERE y.id=:id AND z.id = x.module.id AND x.available = true AND (" +
                 "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major > x.major) = 0 AND (" +
                 "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major = x.major AND z.minor > x.minor) = 0 AND (" +
