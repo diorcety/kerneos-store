@@ -18,27 +18,27 @@ import org.sonatype.aether.repository.RemoteRepository;
 /**
  * A helper to boot the repository system and a repository system session.
  */
-public class Booter
-{
+public class Booter {
 
-    public static RepositorySystem newRepositorySystem()
-    {
+    public static RepositorySystem newRepositorySystem() {
         return ManualRepositorySystemFactory.newRepositorySystem();
     }
 
-    public static RepositorySystemSession newRepositorySystemSession( RepositorySystem system )
-    {
+    public static RepositorySystemSession newRepositorySystemSession(RepositorySystem system) {
+        return newRepositorySystemSession(system, "target/local-repo");
+    }
+
+    public static RepositorySystemSession newRepositorySystemSession(RepositorySystem system, String repo) {
         MavenRepositorySystemSession session = new MavenRepositorySystemSession();
 
-        LocalRepository localRepo = new LocalRepository( "target/local-repo" );
+        LocalRepository localRepo = new LocalRepository(repo);
         session.setLocalRepositoryManager(system.newLocalRepositoryManager(localRepo));
 
         return session;
     }
 
-    public static RemoteRepository newCentralRepository()
-    {
-        return new RemoteRepository( "central", "default", "http://repo1.maven.org/maven2/" );
+    public static RemoteRepository newCentralRepository() {
+        return new RemoteRepository("central", "default", "http://repo1.maven.org/maven2/");
     }
 
 }

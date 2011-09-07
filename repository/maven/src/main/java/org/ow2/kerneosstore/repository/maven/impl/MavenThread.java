@@ -89,8 +89,11 @@ public class MavenThread extends Thread {
             do {
                 logger.info("============================================================");
                 logger.info(MavenThread.class.getName());
-                logger.info("ID: " + resolver.getRepository().getId());
-                logger.info("URL: " + resolver.getRepository().getUrl());
+                logger.info("LOCAL: " + resolver.getSession().getLocalRepository().toString());
+                if (resolver.getRepository() != null) {
+                    logger.info("ID: " + resolver.getRepository().getId());
+                    logger.info("URL: " + resolver.getRepository().getUrl());
+                }
                 logger.info("------------------------------------------------------------");
                 logger.info("NO INDEX");
                 logger.info("============================================================");

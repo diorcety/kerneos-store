@@ -118,6 +118,7 @@ public class Maven implements Repository {
             Artifact artifact = resolver.getArtifact(repositoryKey);
             return artifact.getFile().toURI().toURL();
         } catch (Exception e) {
+            logger.error("Can't get the artifact \"" + repositoryKey + "\": " + e);
             return null;
         }
     }
