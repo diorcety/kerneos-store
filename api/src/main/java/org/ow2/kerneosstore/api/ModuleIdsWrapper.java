@@ -26,40 +26,11 @@
 package org.ow2.kerneosstore.api;
 
 import java.util.Collection;
-import java.util.Map;
 
-public interface StoreClient {
+public interface ModuleIdsWrapper {
+    void addId(String id);
 
-    // Store
+    Collection<String> getIds();
 
-    public Store getStore();
-
-    // RepositoryEntry
-
-    public Map<Repository, String> getRepositoryEntries(String moduleId);
-
-    // ModuleVersion
-
-    public byte[] getModuleVersionImage(String id);
-
-    public ModuleVersion getModuleVersion(String id);
-
-    public Collection<? extends ModuleVersion> searchModules(String filter, String field, String order, Integer itemByPage, Integer page);
-
-    public ModuleIdsWrapper searchModulesGetIds(String filter);
-
-    public String searchModulesResultsNumber(String filter);
-
-    public Collection<? extends ModuleVersion> searchModulesByCategory(String id, String field, String order, Integer itemByPage, Integer page);
-
-    public ModuleIdsWrapper searchModulesByCategoryGetIds(String id);
-
-    public String searchModulesByCategoryResultsNumber(String id);
-
-    // Category
-
-    public Collection<? extends Category> getCategories();
-
-    public Category getCategory(String id);
-
+    void setIds(Collection<String> ids);
 }

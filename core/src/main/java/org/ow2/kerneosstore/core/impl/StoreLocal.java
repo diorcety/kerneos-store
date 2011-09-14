@@ -26,15 +26,16 @@
 package org.ow2.kerneosstore.core.impl;
 
 import org.ow2.kerneosstore.api.CategoryMeta;
+import org.ow2.kerneosstore.api.ModuleIdsWrapper;
 import org.ow2.kerneosstore.api.ModuleMeta;
 import org.ow2.kerneosstore.api.ModuleVersion;
-import org.ow2.kerneosstore.api.Repository;
 import org.ow2.kerneosstore.api.RepositoryMeta;
 import org.ow2.kerneosstore.api.Store;
 import org.ow2.kerneosstore.core.CategoryBean;
 import org.ow2.kerneosstore.core.EJBStoreAdmin;
 import org.ow2.kerneosstore.core.EJBStoreClient;
 import org.ow2.kerneosstore.core.ModuleBean;
+import org.ow2.kerneosstore.core.ModuleIdsWrapperEntity;
 import org.ow2.kerneosstore.core.ModuleVersionBean;
 import org.ow2.kerneosstore.core.ModuleVersionPK;
 import org.ow2.kerneosstore.core.RepositoryBean;
@@ -304,6 +305,51 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
         return (Collection<ModuleVersionBean>) q.getResultList();
     }
 
+    @Override
+    public ModuleIdsWrapper searchModulesGetIds(String filter) {
+        String strQuery = "SELECT x.module.id FROM ModuleVersion x WHERE x.available = true AND (" +
+                "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major > x.major) = 0 AND (" +
+                "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major = x.major AND z.minor > x.minor) = 0 AND (" +
+                "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major = x.major AND z.minor = x.minor AND z.revision > x.revision ) = 0 AND";
+
+        // Name (default)
+        strQuery += " LOWER(x.name) LIKE :filter";
+
+        // Create the query
+        Query q = entityManager.createQuery(strQuery);
+        if (filter != null)
+            q.setParameter("filter", "%" + filter.toLowerCase() + "%");
+
+        Collection<String> results = (Collection<String>) q.getResultList();
+
+        ModuleIdsWrapperEntity moduleIdsWrapper = new ModuleIdsWrapperEntity();
+        moduleIdsWrapper.setIds(results);
+
+        return moduleIdsWrapper;
+    }
+
+    @Override
+    public String searchModulesResultsNumber(String filter) {
+        boolean strictFilter = false;
+        String strQuery = "SELECT count(*) FROM ModuleVersion x WHERE x.available = true AND (" +
+                "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major > x.major) = 0 AND (" +
+                "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major = x.major AND z.minor > x.minor) = 0 AND (" +
+                "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major = x.major AND z.minor = x.minor AND z.revision > x.revision ) = 0 AND";
+
+        // Name (default)
+        strQuery += " LOWER(x.name) LIKE :filter";
+
+        // Create the query
+        Query q = entityManager.createQuery(strQuery);
+        if (filter != null)
+            if (strictFilter)
+                q.setParameter("filter", filter.toLowerCase());
+            else
+                q.setParameter("filter", "%" + filter.toLowerCase() + "%");
+
+        return q.getSingleResult().toString();
+    }
+
 
     ///////////////////////////////////////////////////////////////////////////
     /// Repository  Entity
@@ -482,7 +528,6 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
 
     @Override
     public Collection<? extends ModuleVersion> searchModulesByCategory(String id, String field, String order, Integer itemByPage, Integer page) {
-        //TODO id to lower case
         String strQuery = "SELECT x FROM Category y, ModuleVersion x, IN(y.modules) z WHERE y.id=:id AND z.id = x.module.id AND x.available = true AND (" +
                 "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major > x.major) = 0 AND (" +
                 "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major = x.major AND z.minor > x.minor) = 0 AND (" +
@@ -526,5 +571,38 @@ public class StoreLocal implements EJBStoreClient, EJBStoreAdmin {
         }
 
         return (Collection<ModuleVersionBean>) q.getResultList();
+    }
+
+    @Override
+    public ModuleIdsWrapper searchModulesByCategoryGetIds(String id) {
+        String strQuery = "SELECT x.module.id FROM Category y, ModuleVersion x, IN(y.modules) z WHERE y.id=:id AND z.id = x.module.id AND x.available = true AND (" +
+                "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major > x.major) = 0 AND (" +
+                "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major = x.major AND z.minor > x.minor) = 0 AND (" +
+                "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major = x.major AND z.minor = x.minor AND z.revision > x.revision ) = 0";
+
+        // Create the query
+        Query q = entityManager.createQuery(strQuery);
+        q.setParameter("id", id);
+
+        Collection<String> result = (Collection<String>) q.getResultList();
+
+        ModuleIdsWrapperEntity moduleIdsWrapper = new ModuleIdsWrapperEntity();
+        moduleIdsWrapper.setIds(result);
+
+        return moduleIdsWrapper;
+    }
+
+    @Override
+    public String searchModulesByCategoryResultsNumber(String id) {
+        String strQuery = "SELECT count(*) FROM Category y, ModuleVersion x, IN(y.modules) z WHERE y.id=:id AND z.id = x.module.id AND x.available = true AND (" +
+                "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major > x.major) = 0 AND (" +
+                "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major = x.major AND z.minor > x.minor) = 0 AND (" +
+                "SELECT count(*) FROM ModuleVersion z WHERE z.module.id = x.module.id AND z.available = true AND z.major = x.major AND z.minor = x.minor AND z.revision > x.revision ) = 0";
+
+        // Create the query
+        Query q = entityManager.createQuery(strQuery);
+        q.setParameter("id", id);
+
+        return q.getSingleResult().toString();
     }
 }

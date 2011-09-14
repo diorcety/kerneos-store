@@ -39,11 +39,13 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.http.NamespaceException;
 
 import org.ow2.kerneosstore.api.Category;
+import org.ow2.kerneosstore.api.ModuleIdsWrapper;
 import org.ow2.kerneosstore.api.ModuleVersion;
 import org.ow2.kerneosstore.api.Repository;
 import org.ow2.kerneosstore.core.EJBStoreClient;
 import org.ow2.kerneosstore.web.CategoryElement;
 import org.ow2.kerneosstore.web.ModuleElement;
+import org.ow2.kerneosstore.web.ModuleIdsWrapperElement;
 import org.ow2.kerneosstore.web.RSStoreClient;
 
 import org.ow2.kerneosstore.web.StoreElement;
@@ -65,7 +67,6 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -156,6 +157,7 @@ public class StoreClientImpl implements RSStoreClient {
             @QueryParam("order") String order,
             @QueryParam("itemByPage") Integer itemByPage,
             @QueryParam("page") Integer page) {
+        //TODO if filter is a empty string searchModules is not called
         Collection<? extends ModuleVersion> modules = storeClient.searchModules(filter, field, order, itemByPage, page);
 
         List<ModuleElement> moduleList = new LinkedList<ModuleElement>();
@@ -167,6 +169,22 @@ public class StoreClientImpl implements RSStoreClient {
         }
 
         return moduleList;
+    }
+
+    @Override
+    @GET
+    @Path("/modules/{filter}/ids")
+    @Produces(MediaType.APPLICATION_XML)
+    public ModuleIdsWrapper searchModulesGetIds(@PathParam("filter") String filter) {
+        return new ModuleIdsWrapperElement(storeClient.searchModulesGetIds(filter));
+    }
+
+    @Override
+    @GET
+    @Path("/modules/{filter}/number")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String searchModulesResultsNumber(@PathParam("filter") String filter) {
+        return storeClient.searchModulesResultsNumber(filter);
     }
 
     @Override
@@ -254,6 +272,22 @@ public class StoreClientImpl implements RSStoreClient {
         }
 
         return moduleList;
+    }
+
+    @Override
+    @GET
+    @Path("/category/{id}/modules/ids")
+    @Produces(MediaType.APPLICATION_XML)
+    public ModuleIdsWrapper searchModulesByCategoryGetIds(@PathParam("id") String id) {
+        return new ModuleIdsWrapperElement(storeClient.searchModulesByCategoryGetIds(id));
+    }
+
+    @Override
+    @GET
+    @Path("/category/{id}/modules/number")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String searchModulesByCategoryResultsNumber(@PathParam("id") String id) {
+        return storeClient.searchModulesByCategoryResultsNumber(id);
     }
 
     @Override
