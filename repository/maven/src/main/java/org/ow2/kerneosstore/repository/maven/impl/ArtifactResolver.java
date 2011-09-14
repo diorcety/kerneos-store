@@ -28,6 +28,7 @@ package org.ow2.kerneosstore.repository.maven.impl;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.artifact.Artifact;
+import org.sonatype.aether.repository.LocalRepository;
 import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.ArtifactRequest;
 import org.sonatype.aether.resolution.ArtifactResolutionException;
@@ -43,19 +44,29 @@ import java.util.regex.Pattern;
 public class ArtifactResolver {
     private static Pattern artifactPattern = Pattern.compile("([^:]+):([^:]+)(?::([^:]+))?");
 
-    private RemoteRepository repository;
+    private RemoteRepository repository = null;
     private RepositorySystem system;
     private RepositorySystemSession session;
 
     public ArtifactResolver(String repository) {
         // Init repository system
-        system = Booter.newRepositorySystem();
-        session = Booter.newRepositorySystemSession(system);
+        this.system = Booter.newRepositorySystem();
 
-        if (repository != null)
-            this.repository = new RemoteRepository("default", "default", repository);
-        else
+        if (repository != null) {
+            if (repository.toLowerCase().startsWith("file://")) {
+                this.session = Booter.newRepositorySystemSession(this.system, repository.substring(7));
+            } else {
+                this.session = Booter.newRepositorySystemSession(this.system);
+                this.repository = new RemoteRepository("default", "default", repository);
+            }
+        } else {
+            this.session = Booter.newRepositorySystemSession(this.system);
             this.repository = Booter.newCentralRepository();
+        }
+    }
+
+    public RepositorySystemSession getSession() {
+        return session;
     }
 
     public RemoteRepository getRepository() {
@@ -84,7 +95,8 @@ public class ArtifactResolver {
             rangeRequest.setArtifact(artifact);
 
             // Add repository
-            rangeRequest.addRepository(repository);
+            if (repository != null)
+                rangeRequest.addRepository(repository);
 
             // Resolve
             VersionRangeResult rangeResult = system.resolveVersionRange(session, rangeRequest);
@@ -97,7 +109,8 @@ public class ArtifactResolver {
         artfactRequest.setArtifact(artifact);
 
         // Add repository
-        artfactRequest.addRepository(repository);
+        if (repository != null)
+            artfactRequest.addRepository(repository);
 
         // Resolve
         ArtifactResult descriptorResult = system.resolveArtifact(session, artfactRequest);
